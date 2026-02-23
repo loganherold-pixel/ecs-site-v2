@@ -32,6 +32,28 @@ body{
   overflow-x:hidden;
 }
 
+.hero--photo::after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  /* Uses the small file by default, and the larger one on high-DPI screens */
+  background-image: image-set(
+    url("hero-overland-web.jpg") 1x,
+    url("hero-overland-2048.jpg") 2x
+  );
+
+  background-size: cover;
+  background-position: right center;
+  transform: scale(1.03);
+
+  /* Since we pre-darkened, keep filter lighter */
+  filter: saturate(.95) contrast(1.03) brightness(.92);
+
+  opacity: .95;
+  z-index: 0;
+}
+
 /* ===== Ambient topo overlay ===== */
 body::before{
   content:"";
@@ -663,4 +685,5 @@ footer a:hover{ opacity:.85; }
 </script>
 </body>
 </html>
+
 
