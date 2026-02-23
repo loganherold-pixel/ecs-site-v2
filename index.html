@@ -634,10 +634,21 @@ footer a:hover{ opacity:.85; }
 </div>
 
 <script>
-  // Year
+  // ===== DASHBOARD MOCK TOGGLE =====
+  // false = use CSS mock
+  // true = use real image file (ecs-dashboard.png)
+  const USE_REAL_DASHBOARD_IMAGE = false;
+
+
+  // Apply toggle
+  if (USE_REAL_DASHBOARD_IMAGE) {
+    document.documentElement.classList.add("real-dashboard");
+  }
+
+  // Year auto-update
   document.getElementById('y').textContent = new Date().getFullYear();
 
-  // Fade-in on view (tiny, no framework)
+  // Fade-in
   const els = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{
@@ -652,3 +663,4 @@ footer a:hover{ opacity:.85; }
 </script>
 </body>
 </html>
+
