@@ -7,24 +7,32 @@
 
 <style>
 :root{
+  --bg0:#05070a;
   --bg1:#07090c;
   --bg2:#0b0f14;
+  --panel:#0f141a;
   --text:#e6edf3;
   --muted:#96a6b2;
   --amber:#f2b23a;
+  --amber2:#e6a52d;
+  --stroke:rgba(255,255,255,.06);
+  --shadow:0 22px 70px rgba(0,0,0,.55);
 }
 
 *{box-sizing:border-box}
 
+html,body{height:100%}
+
 body{
   margin:0;
   font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: radial-gradient(circle at 50% 0%, #11161d, var(--bg1));
+  background: radial-gradient(circle at 50% -10%, #121821, var(--bg1));
   color:var(--text);
   -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
 }
 
-/* topo overlay */
+/* ===== Ambient topo overlay ===== */
 body::before{
   content:"";
   position:fixed;
@@ -32,176 +40,615 @@ body::before{
   background-image:url("https://www.transparenttextures.com/patterns/topography.png");
   opacity:.035;
   pointer-events:none;
+  z-index:0;
 }
 
+/* ===== Animated aurora gradient ===== */
+.aurora{
+  position:fixed;
+  inset:-40vh -20vw auto -20vw;
+  height:90vh;
+  z-index:0;
+  pointer-events:none;
+  filter: blur(30px) saturate(115%);
+  opacity:.55;
+}
+.aurora::before,
+.aurora::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(60% 55% at 20% 40%, rgba(242,178,58,.22), transparent 55%),
+    radial-gradient(55% 60% at 60% 20%, rgba(120,190,255,.10), transparent 55%),
+    radial-gradient(60% 60% at 80% 60%, rgba(242,178,58,.12), transparent 55%);
+  transform: translate3d(0,0,0);
+  animation: drift 14s ease-in-out infinite;
+}
+.aurora::after{
+  opacity:.7;
+  animation-duration: 18s;
+  animation-direction: reverse;
+}
+@keyframes drift{
+  0%   { transform: translate(-2%, -3%) scale(1.02); }
+  50%  { transform: translate( 3%,  2%) scale(1.06); }
+  100% { transform: translate(-2%, -3%) scale(1.02); }
+}
+
+/* ===== Layout ===== */
 .container{
-  max-width:1100px;
+  position:relative;
+  z-index:1;
+  max-width:1120px;
   margin:auto;
-  padding:100px 20px;
+  padding:96px 20px 90px;
 }
 
 .hero{
-  text-align:center;
+  display:grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap:34px;
+  align-items:center;
+}
+
+@media (max-width: 980px){
+  .hero{ grid-template-columns:1fr; }
+}
+
+/* ===== Motion (fade-in) ===== */
+.reveal{
+  opacity:0;
+  transform: translateY(14px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.is-visible{
+  opacity:1;
+  transform: translateY(0);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .aurora::before, .aurora::after{ animation:none; }
+  .reveal{ opacity:1; transform:none; transition:none; }
+  .glow{ animation:none; }
+}
+
+/* ===== Hero left ===== */
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
 }
 
 .logo-img{
-  width:260px;
-  max-width:80%;
-  margin-bottom:30px;
-  filter:drop-shadow(0 0 25px rgba(242,178,58,.15));
+  width:250px;
+  max-width:70%;
+  filter: drop-shadow(0 0 28px rgba(242,178,58,.18));
+}
+
+.kicker{
+  display:inline-flex;
+  gap:10px;
+  align-items:center;
+  font-size:12px;
+  letter-spacing:3px;
+  color:rgba(242,178,58,.92);
+  text-transform:uppercase;
+}
+
+.kicker .dot{
+  width:7px;height:7px;border-radius:99px;
+  background: linear-gradient(180deg, var(--amber), var(--amber2));
+  box-shadow: 0 0 12px rgba(242,178,58,.45);
 }
 
 h1{
   font-size:44px;
-  margin:10px 0 18px;
-  font-weight:700;
+  line-height:1.08;
+  margin:0;
+  font-weight:760;
+  letter-spacing:-.2px;
 }
 
 .subtitle{
   color:var(--muted);
   max-width:640px;
-  margin:auto;
   line-height:1.7;
   font-size:16px;
+  margin:0;
 }
 
-.buttons{
-  margin-top:40px;
+/* Buttons (own styling; avoids badge SVG CORS weirdness) */
+.ctaRow{
   display:flex;
-  justify-content:center;
-  gap:18px;
   flex-wrap:wrap;
+  gap:12px;
+  margin-top:14px;
 }
 
-.buttons img{
-  height:54px;
-  transition:.25s ease;
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:12px 16px;
+  border-radius:14px;
+  font-weight:700;
+  text-decoration:none;
+  transition:.2s ease;
+  border:1px solid transparent;
+  user-select:none;
 }
 
-.buttons img:hover{
-  transform:translateY(-4px);
-  opacity:.85;
+.btnPrimary{
+  background: linear-gradient(180deg, var(--amber), var(--amber2));
+  color:#0b0f14;
+  box-shadow: 0 16px 40px rgba(242,178,58,.12);
+}
+.btnPrimary:hover{ transform: translateY(-2px); opacity:.92; }
+
+.btnSecondary{
+  background: rgba(255,255,255,.03);
+  border-color: rgba(255,255,255,.10);
+  color:var(--text);
+}
+.btnSecondary:hover{ transform: translateY(-2px); border-color: rgba(242,178,58,.28); }
+
+.btnSmall{
+  padding:10px 14px;
+  font-size:14px;
 }
 
+/* Store badges (optional) */
+.storeRow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-top:10px;
+}
+.storeRow img{
+  height:52px;
+  transition:.2s ease;
+}
+.storeRow img:hover{ transform: translateY(-3px); opacity:.86; }
+
+/* ===== Hero right: dashboard mock ===== */
+.mockWrap{
+  position:relative;
+}
+
+.mock{
+  border-radius:22px;
+  background:
+    radial-gradient(120% 120% at 20% 10%, rgba(242,178,58,.14), transparent 42%),
+    radial-gradient(120% 120% at 85% 20%, rgba(120,190,255,.08), transparent 45%),
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border:1px solid var(--stroke);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+  min-height:340px;
+}
+
+/* subtle “glass” sheen */
+.mock::before{
+  content:"";
+  position:absolute;
+  inset:-40% -30% auto -30%;
+  height:60%;
+  background: radial-gradient(closest-side, rgba(255,255,255,.10), transparent 70%);
+  transform: rotate(8deg);
+  opacity:.55;
+}
+
+/* mock header */
+.mockTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 16px 10px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  background: rgba(10,12,15,.5);
+  backdrop-filter: blur(8px);
+}
+
+.pills{
+  display:flex; gap:8px; align-items:center;
+}
+.pill{
+  width:10px; height:10px; border-radius:999px;
+  background: rgba(255,255,255,.10);
+}
+.pill:nth-child(2){ opacity:.7 }
+.pill:nth-child(3){ opacity:.45 }
+
+.mockTitle{
+  font-size:12px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color: rgba(242,178,58,.92);
+}
+
+/* mock content */
+.mockBody{
+  padding:16px;
+  display:grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap:14px;
+}
+
+@media (max-width: 980px){
+  .mockBody{ grid-template-columns:1fr; }
+}
+
+.panel{
+  border-radius:16px;
+  background: rgba(10,12,15,.55);
+  border:1px solid rgba(255,255,255,.06);
+  padding:14px;
+}
+
+.panel h3{
+  margin:0 0 10px;
+  font-size:14px;
+  color: rgba(230,237,243,.92);
+}
+
+.kpiRow{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.kpi{
+  border-radius:14px;
+  background: rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.05);
+  padding:10px 10px 12px;
+}
+.kpi .label{ font-size:11px; color: var(--muted); }
+.kpi .value{
+  margin-top:6px;
+  font-size:18px;
+  font-weight:750;
+  letter-spacing:.2px;
+}
+.kpi .bar{
+  margin-top:10px;
+  height:6px;
+  border-radius:99px;
+  background: rgba(255,255,255,.06);
+  overflow:hidden;
+}
+.kpi .bar > span{
+  display:block;
+  height:100%;
+  width:70%;
+  border-radius:99px;
+  background: linear-gradient(90deg, rgba(242,178,58,.85), rgba(242,178,58,.25));
+}
+
+.list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 10px;
+  border-radius:14px;
+  background: rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.05);
+}
+.row .left{
+  display:flex; align-items:center; gap:10px;
+}
+.ic{
+  width:28px;height:28px;border-radius:10px;
+  background: rgba(242,178,58,.14);
+  border:1px solid rgba(242,178,58,.18);
+}
+.row .name{
+  font-size:13px;
+}
+.badge{
+  font-size:11px;
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(242,178,58,.10);
+  border:1px solid rgba(242,178,58,.18);
+  color: rgba(242,178,58,.95);
+}
+
+/* optional: replace mock with a real image later */
+.mockImage{
+  display:none;
+  width:100%;
+  height:auto;
+}
+
+/* ===== Sections ===== */
 .section{
-  margin-top:140px;
-  text-align:center;
+  margin-top:120px;
 }
 
-.section h2{
+.sectionHeader{
+  text-align:center;
+  margin-bottom:40px;
+}
+.sectionHeader h2{
+  margin:0 0 12px;
   font-size:28px;
-  margin-bottom:50px;
+}
+.sectionHeader p{
+  margin:0 auto;
+  color:var(--muted);
+  max-width:760px;
+  line-height:1.7;
+  font-size:15px;
 }
 
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:26px;
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  gap:18px;
 }
 
 .card{
-  background:#0f141a;
-  padding:30px;
+  background: rgba(15,20,26,.78);
+  border:1px solid rgba(255,255,255,.06);
   border-radius:18px;
-  border:1px solid rgba(255,255,255,.05);
-  transition:.25s ease;
+  padding:22px;
+  transition:.22s ease;
 }
-
 .card:hover{
-  border-color:rgba(242,178,58,.4);
-  transform:translateY(-6px);
+  transform: translateY(-4px);
+  border-color: rgba(242,178,58,.30);
 }
-
 .card h3{
-  margin-bottom:14px;
-  font-size:18px;
+  margin:0 0 10px;
+  font-size:16px;
 }
-
 .card p{
+  margin:0;
   color:var(--muted);
-  font-size:14px;
   line-height:1.65;
+  font-size:14px;
 }
 
+/* ===== Agency callout ===== */
+.callout{
+  margin-top:36px;
+  border-radius:20px;
+  border:1px solid rgba(242,178,58,.18);
+  background:
+    radial-gradient(120% 140% at 20% 0%, rgba(242,178,58,.14), transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  padding:22px;
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+  box-shadow: 0 18px 50px rgba(0,0,0,.35);
+}
+.calloutIcon{
+  width:40px;height:40px;border-radius:16px;
+  background: rgba(242,178,58,.14);
+  border:1px solid rgba(242,178,58,.20);
+  box-shadow: 0 0 18px rgba(242,178,58,.10);
+}
+.callout h3{
+  margin:0 0 6px;
+  font-size:16px;
+}
+.callout p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.65;
+  font-size:14px;
+}
+.callout strong{ color: rgba(230,237,243,.92); }
+
+/* ===== Footer ===== */
 footer{
-  margin-top:160px;
-  padding:50px 0;
-  border-top:1px solid rgba(255,255,255,.05);
+  margin-top:120px;
+  padding:44px 0 30px;
+  border-top:1px solid rgba(255,255,255,.06);
   text-align:center;
   color:var(--muted);
   font-size:13px;
 }
-
-footer a{
-  color:var(--amber);
-  text-decoration:none;
-}
+footer a{ color:var(--amber); text-decoration:none; }
+footer a:hover{ opacity:.85; }
 </style>
 </head>
 
 <body>
+<div class="aurora" aria-hidden="true"></div>
 
 <div class="container">
+  <section class="hero">
+    <!-- LEFT -->
+    <div class="brand">
+      <div class="kicker reveal"><span class="dot"></span> Expedition Command System</div>
 
-  <div class="hero">
-    <img src="ecs-logo.png" alt="Expedition Command System" class="logo-img">
+      <img src="ecs-logo.png" alt="Expedition Command System" class="logo-img reveal" />
 
-    <h1>Command-Grade Expedition Readiness</h1>
+      <h1 class="reveal">
+        Plan. Validate. Deploy.<br/>
+        <span style="color:rgba(242,178,58,.95)">Execute with confidence.</span>
+      </h1>
 
-    <p class="subtitle">
-      Unified mission planning, structured loadout validation, consumable forecasting,
-      terrain intelligence, and field execution tools — engineered for serious
-      overlanders and professional teams.
-    </p>
+      <p class="subtitle reveal">
+        ECS unifies mission setup, route reality, loadout readiness, and safety intel into a single
+        operator-grade system — built for serious overlanders and <strong>agency-ready teams</strong>.
+      </p>
 
-    <div class="buttons">
-      <a href="#" target="_blank">
-        <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
-      </a>
-      <a href="#" target="_blank">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play">
-      </a>
+      <div class="ctaRow reveal">
+        <!-- Replace hrefs later with real store links -->
+        <a class="btn btnPrimary btnSmall" href="#" target="_blank" rel="noopener">Get ECS</a>
+        <a class="btn btnSecondary btnSmall" href="#agency" rel="noopener">Agency-ready overview</a>
+        <a class="btn btnSecondary btnSmall" href="mailto:hello@expeditioncommand.com">Contact</a>
+      </div>
+
+      <!-- Optional badges (leave until store links exist) -->
+      <div class="storeRow reveal" aria-label="App stores">
+        <a href="#" target="_blank" rel="noopener">
+          <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+        </a>
+        <a href="#" target="_blank" rel="noopener">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play">
+        </a>
+      </div>
     </div>
-  </div>
 
-  <div class="section">
-    <h2>Operational Architecture</h2>
+    <!-- RIGHT -->
+    <div class="mockWrap reveal">
+      <div class="mock" role="img" aria-label="ECS dashboard mockup">
+        <!-- If you later add ecs-dashboard.png, you can swap to image by enabling .mockImage and hiding mockBody -->
+        <img class="mockImage" src="ecs-dashboard.png" alt="ECS dashboard screenshot">
+
+        <div class="mockTop">
+          <div class="pills"><span class="pill"></span><span class="pill"></span><span class="pill"></span></div>
+          <div class="mockTitle">Mission Dashboard</div>
+        </div>
+
+        <div class="mockBody">
+          <div class="panel">
+            <h3>Readiness Snapshot</h3>
+            <div class="kpiRow">
+              <div class="kpi">
+                <div class="label">Overall</div>
+                <div class="value">92%</div>
+                <div class="bar"><span style="width:92%"></span></div>
+              </div>
+              <div class="kpi">
+                <div class="label">Critical</div>
+                <div class="value">100%</div>
+                <div class="bar"><span style="width:100%"></span></div>
+              </div>
+              <div class="kpi">
+                <div class="label">Consumables</div>
+                <div class="value">7 days</div>
+                <div class="bar"><span style="width:70%"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Active Modules</h3>
+            <div class="list">
+              <div class="row">
+                <div class="left"><span class="ic"></span><span class="name">Vehicle Systems</span></div>
+                <span class="badge">Live</span>
+              </div>
+              <div class="row">
+                <div class="left"><span class="ic"></span><span class="name">Attitude Monitor</span></div>
+                <span class="badge">Ready</span>
+              </div>
+              <div class="row">
+                <div class="left"><span class="ic"></span><span class="name">Navigate + Intel</span></div>
+                <span class="badge">Queued</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Operational Architecture -->
+  <section class="section">
+    <div class="sectionHeader reveal">
+      <h2>Operational Architecture</h2>
+      <p>
+        ECS is built as a layered system: plan the mission, validate the build, deploy the loadout,
+        and execute with clear readiness signals.
+      </p>
+    </div>
 
     <div class="grid">
-
-      <div class="card">
+      <div class="card reveal">
         <h3>Mission Configuration</h3>
-        <p>
-          Define terrain, system thresholds, duration modeling,
-          and expedition parameters with structured clarity.
-        </p>
+        <p>Define terrain, conditions, duration, and system thresholds with structured clarity.</p>
       </div>
-
-      <div class="card">
+      <div class="card reveal">
         <h3>Loadout Validation</h3>
-        <p>
-          Deploy readiness profiles, critical equipment tracking,
-          and field resource accountability before departure.
-        </p>
+        <p>Critical gear checks, readiness scoring, and deployment accountability before departure.</p>
       </div>
-
-      <div class="card">
+      <div class="card reveal">
         <h3>Navigation + Safety</h3>
+        <p>Imports, remoteness awareness, bailout planning, and emergency reference tools.</p>
+      </div>
+      <div class="card reveal">
+        <h3>Offline-First</h3>
+        <p>Configure and operate without signal; sync when connectivity returns.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Agency-ready -->
+  <section id="agency" class="section">
+    <div class="sectionHeader reveal">
+      <h2>Agency-ready, civilian-friendly</h2>
+      <p>
+        ECS is designed to scale from single-user expeditions to coordinated teams —
+        with professional posture, repeatable workflows, and audit-friendly structure.
+      </p>
+    </div>
+
+    <div class="callout reveal">
+      <div class="calloutIcon" aria-hidden="true"></div>
+      <div>
+        <h3>Built for teams that can’t afford “winging it”</h3>
         <p>
-          Integrated remoteness scoring, waypoint imports,
-          mapping overlays, and emergency reference tools.
+          <strong>Standardized readiness</strong>, <strong>configurable operating profiles</strong>,
+          and <strong>repeatable deployment checklists</strong> help crews stay aligned across vehicles,
+          roles, and changing conditions — without turning your workflow into a spreadsheet.
         </p>
       </div>
-
     </div>
-  </div>
 
-  <footer>
+    <div class="grid" style="margin-top:18px;">
+      <div class="card reveal">
+        <h3>Team-mode architecture</h3>
+        <p>Shared missions, role-aware loadouts, and consistent standards across participants.</p>
+      </div>
+      <div class="card reveal">
+        <h3>Intel + documentation</h3>
+        <p>Operational notes, permit/closure awareness, and PDF references in one place.</p>
+      </div>
+      <div class="card reveal">
+        <h3>Professional posture</h3>
+        <p>Designed to look and behave like an operational tool — not a hobby app.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="reveal">
     Contact: <a href="mailto:hello@expeditioncommand.com">hello@expeditioncommand.com</a><br><br>
-    © 2026 Expedition Command System. All rights reserved.
+    © <span id="y"></span> Expedition Command System. All rights reserved.
   </footer>
-
 </div>
 
+<script>
+  // Year
+  document.getElementById('y').textContent = new Date().getFullYear();
+
+  // Fade-in on view (tiny, no framework)
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('is-visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  els.forEach(el => io.observe(el));
+</script>
 </body>
 </html>
