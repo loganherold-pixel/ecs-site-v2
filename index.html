@@ -33,7 +33,7 @@
       position:relative;
       height: 100vh;
       width: 100vw;
-      background-image:url("./background-image.jpg"); /* ensure filename matches */
+      background-image:url("./background-image.jpg"); /* swap to your new hero image filename */
       background-size:cover;
       background-position:center;
       background-attachment: fixed;
@@ -56,7 +56,6 @@
       pointer-events:none;
     }
 
-    /* subtle vignette for depth */
     .hero::after{
       content:"";
       position:absolute;
@@ -93,7 +92,7 @@
       z-index:2;
       width:min(1080px, calc(100vw - 48px));
       display:grid;
-      gap: 18px;
+      gap: 16px;
       justify-items:center;
       text-align:center;
       transform: translateY(-6px);
@@ -103,6 +102,16 @@
 
     @keyframes fadeUp{
       to { opacity:1; transform: translateY(0); }
+    }
+
+    /* ====== FLAGSHIP LOGO ====== */
+    .flagshipLogo{
+      width: clamp(110px, 12vw, 160px);
+      height: auto;
+      filter: drop-shadow(0 16px 44px rgba(0,0,0,0.55));
+      margin-top: 2px;
+      user-select: none;
+      -webkit-user-drag: none;
     }
 
     /* ====== TOP BRAND LINE ====== */
@@ -137,7 +146,7 @@
       font-weight: 800;
       letter-spacing: 0.8px;
       text-shadow: 0 12px 40px rgba(0,0,0,0.55);
-      margin-top: 2px;
+      margin-top: 0px;
     }
 
     .sub{
@@ -154,7 +163,7 @@
       display:grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 14px;
-      margin-top: 6px;
+      margin-top: 2px;
     }
 
     .pill{
@@ -202,7 +211,7 @@
       align-items:center;
       justify-content:center;
       gap: 14px;
-      margin-top: 6px;
+      margin-top: 4px;
       flex-wrap: wrap;
     }
 
@@ -269,6 +278,7 @@
       justify-content:center;
     }
 
+    /* FIX: lock store icon color to clean white (prevents “discoloration”) */
     .badge{
       display:inline-flex;
       align-items:center;
@@ -277,7 +287,7 @@
       border-radius: 12px;
       background: var(--panel2);
       border: 1px solid var(--stroke);
-      color: var(--text);
+      color: #ffffff;            /* <- forces SVG to white via currentColor */
       text-decoration:none;
       backdrop-filter: blur(10px);
       transition: transform 0.2s ease, border-color 0.2s ease;
@@ -314,13 +324,18 @@
       width: 22px;
       height: 22px;
       flex: 0 0 auto;
-      fill: var(--text);
-      opacity: 0.95;
+      fill: currentColor;        /* <- key */
+      opacity: 1;                /* <- key */
+    }
+
+    .badge svg *{
+      fill: currentColor !important; /* <- forces any nested path fill */
+      opacity: 1 !important;
     }
 
     /* ====== FOOTER (SINGLE-LINE, NO SCROLL) ====== */
     .footer{
-      margin-top: 6px;
+      margin-top: 2px;
       color: rgba(148,163,184,0.85);
       font-size: 0.82rem;
       letter-spacing: 0.2px;
@@ -369,7 +384,7 @@
     }
 
     body.modal-open .topoLayer{
-      opacity: 0.08; /* slightly reduce during modal */
+      opacity: 0.08;
     }
 
     .modalHeader{
@@ -465,18 +480,18 @@
       .row{ grid-template-columns: 1fr; }
       .pill{ min-height: auto; }
       .wrap{ gap: 14px; }
+      .brandline span{ white-space: normal; text-align:center; }
     }
 
-    /* Very short heights: compact spacing + smaller pills */
     @media (max-height: 720px){
       .wrap{ gap: 12px; }
       .pill{ padding: 14px; }
       .sub{ line-height: 1.45; }
-      .footer{ display:none; } /* keep within one view */
+      .footer{ display:none; }
       .modal{ width: min(820px, 96vw); }
+      .flagshipLogo{ width: clamp(92px, 10vw, 130px); }
     }
 
-    /* Accessibility: reduce motion */
     @media (prefers-reduced-motion: reduce){
       .wrap{ animation: none; opacity: 1; transform: none; }
       .cta, .ghost, .badge, .closeBtn{ transition: none; }
@@ -487,12 +502,19 @@
 </head>
 
 <body>
-  <!-- Wrap the entire page content for blur effect -->
+  <!-- Blur wrapper (soft blur when modal opens) -->
   <div class="pageBlur" id="pageRoot">
     <main class="hero" role="main" aria-label="Expedition Command Systems landing">
       <div class="topoLayer" aria-hidden="true"></div>
 
       <div class="wrap">
+        <!-- Flagship Logo (NOTE: filename has a space; URL-encoded here) -->
+        <img
+          class="flagshipLogo"
+          src="./ECS_Flagship%20Logo.png"
+          alt="Expedition Command System flagship logo"
+          draggable="false"
+        />
 
         <div class="brandline" aria-label="ECS tagline">
           <div class="dot" aria-hidden="true"></div>
@@ -549,7 +571,9 @@
           </button>
 
           <div class="storeBadges" aria-label="App store links">
+            <!-- Replace href="#" with your real store links when available -->
             <a class="badge" href="#" aria-label="Download on the App Store" onclick="alert('Add your App Store link here when ready.'); return false;">
+              <!-- Apple icon (forced white via currentColor) -->
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M16.7 13.2c0 2.7 2.4 3.6 2.4 3.6s-1.8 5.2-4.2 5.2c-1.1 0-2-.8-3.2-.8s-2.2.8-3.2.8C3.1 22 1 16.2 1 13.1c0-3 1.8-4.6 3.6-4.6 1.1 0 2.1.8 3.2.8s1.9-.8 3.2-.8c.5 0 2.3.1 3.4 1.7-2.9 1.6-2.7 5.1-.7 6zM13.9 1.8c.7-.9 1.2-2.1 1.1-3.3-1 .1-2.2.7-2.9 1.6-.7.8-1.2 2-1 3.2 1.1.1 2.2-.6 2.8-1.5z"/>
               </svg>
@@ -560,6 +584,7 @@
             </a>
 
             <a class="badge" href="#" aria-label="Get it on Google Play" onclick="alert('Add your Google Play link here when ready.'); return false;">
+              <!-- Google Play icon (forced white via currentColor) -->
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M3.5 2.8c-.3.3-.5.7-.5 1.2v16c0 .5.2.9.5 1.2l9.6-9.2-9.6-9.2zM14.2 12l2.6-2.5-1.7-1-2.9 2.8 2 1.9zm0 0l-2 1.9 2.9 2.8 1.7-1-2.6-2.5zm3.6-3.5L20.5 7c.7-.4 1.2-.3 1.6.1.4.4.4 1 0 1.4L18 12l-1.2-1.2zM17.8 15.5L18 12l4.1 3.5c.4.4.4 1 0 1.4-.4.4-.9.5-1.6.1l-2.7-1.5z"/>
               </svg>
@@ -593,6 +618,9 @@
       </div>
       <div class="modalBody">
         <div class="videoFrame">
+          <!-- Replace with your real demo embed:
+               YouTube: https://www.youtube.com/embed/VIDEO_ID
+               Vimeo:   https://player.vimeo.com/video/VIDEO_ID -->
           <iframe
             id="demoIframe"
             src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1"
@@ -648,4 +676,3 @@
   </script>
 </body>
 </html>
-
