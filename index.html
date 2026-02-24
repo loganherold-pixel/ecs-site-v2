@@ -36,6 +36,7 @@
       background-image:url("./hero.jpg"); /* ensure filename matches */
       background-size:cover;
       background-position:center;
+      background-attachment: fixed;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -207,6 +208,37 @@
       opacity: 0.96;
     }
 
+    .ghost{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: rgba(20,25,34,0.55);
+      color: var(--text);
+      font-weight: 650;
+      letter-spacing: 0.2px;
+      border: 1px solid var(--stroke);
+      cursor:pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      backdrop-filter: blur(10px);
+      text-decoration:none;
+    }
+
+    .ghost:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,178,0,0.22);
+      background: rgba(20,25,34,0.68);
+    }
+
+    .ghost svg{
+      width: 18px;
+      height: 18px;
+      fill: var(--primary);
+      opacity: 0.95;
+    }
+
     .storeBadges{
       display:flex;
       gap: 10px;
@@ -272,6 +304,120 @@
       padding-bottom: 4px;
     }
 
+    /* ====== MODAL (DEMO VIDEO) ====== */
+    .modalOverlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 18px;
+    }
+
+    .modalOverlay[aria-hidden="false"]{
+      display: flex;
+    }
+
+    .modal{
+      width: min(860px, 96vw);
+      background: rgba(12,15,20,0.92);
+      border: 1px solid var(--stroke);
+      border-radius: 16px;
+      box-shadow: 0 30px 90px rgba(0,0,0,0.65);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+    }
+
+    .modalHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(20,25,34,0.55);
+      border-bottom: 1px solid var(--stroke);
+    }
+
+    .modalTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight: 750;
+      letter-spacing: 0.2px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,178,0,0.10);
+      border: 1px solid rgba(255,178,0,0.18);
+      color: var(--muted);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .closeBtn{
+      display:inline-grid;
+      place-items:center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--stroke);
+      cursor:pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .closeBtn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,178,0,0.20);
+    }
+
+    .closeBtn svg{
+      width: 18px;
+      height: 18px;
+      fill: var(--text);
+      opacity: 0.9;
+    }
+
+    .modalBody{
+      padding: 12px;
+    }
+
+    .videoFrame{
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,0.35);
+    }
+
+    .videoFrame iframe{
+      position:absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .modalHint{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: left;
+      padding: 0 2px;
+    }
+
     /* ====== RESPONSIVE: keep no-scroll without overload ====== */
     @media (max-width: 980px){
       .row{ grid-template-columns: 1fr; }
@@ -285,6 +431,13 @@
       .pill{ padding: 14px; }
       .sub{ line-height: 1.45; }
       .footer{ display:none; } /* keep within one view */
+      .modal{ width: min(820px, 96vw); }
+    }
+
+    /* Accessibility: reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .wrap{ animation: none; opacity: 1; transform: none; }
+      .cta, .ghost, .badge, .closeBtn{ transition: none; }
     }
   </style>
 </head>
@@ -308,7 +461,6 @@
       <section class="row" aria-label="Key capabilities">
         <div class="pill">
           <div class="iconbox" aria-hidden="true">
-            <!-- checklist icon -->
             <svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-4 1.4 1.4-5.4 5.4L7.6 12.4 9 11zM4 5h10v2H4V5zm0 6h4v2H4v-2zm0 6h10v2H4v-2z"/></svg>
           </div>
           <div>
@@ -319,7 +471,6 @@
 
         <div class="pill">
           <div class="iconbox" aria-hidden="true">
-            <!-- dashboard icon -->
             <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zM13 3v6h8V3h-8z"/></svg>
           </div>
           <div>
@@ -330,7 +481,6 @@
 
         <div class="pill">
           <div class="iconbox" aria-hidden="true">
-            <!-- map pin icon -->
             <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 0 1 7-7zm0 9.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5.5z"/></svg>
           </div>
           <div>
@@ -345,10 +495,13 @@
           Explore the System
         </a>
 
+        <button class="ghost" type="button" id="openDemo" aria-haspopup="dialog" aria-controls="demoModal">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8.6v6.8c0 .6.7 1 1.2.7l6-3.4c.5-.3.5-1 0-1.3l-6-3.4c-.5-.3-1.2.1-1.2.6zM12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/></svg>
+          Demo Video
+        </button>
+
         <div class="storeBadges" aria-label="App store links">
-          <!-- Replace href="#" with your real store links when available -->
           <a class="badge" href="#" aria-label="Download on the App Store" onclick="alert('Add your App Store link here when ready.'); return false;">
-            <!-- Apple icon -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M16.7 13.2c0 2.7 2.4 3.6 2.4 3.6s-1.8 5.2-4.2 5.2c-1.1 0-2-.8-3.2-.8s-2.2.8-3.2.8C3.1 22 1 16.2 1 13.1c0-3 1.8-4.6 3.6-4.6 1.1 0 2.1.8 3.2.8s1.9-.8 3.2-.8c.5 0 2.3.1 3.4 1.7-2.9 1.6-2.7 5.1-.7 6zM13.9 1.8c.7-.9 1.2-2.1 1.1-3.3-1 .1-2.2.7-2.9 1.6-.7.8-1.2 2-1 3.2 1.1.1 2.2-.6 2.8-1.5z"/>
             </svg>
@@ -359,7 +512,6 @@
           </a>
 
           <a class="badge" href="#" aria-label="Get it on Google Play" onclick="alert('Add your Google Play link here when ready.'); return false;">
-            <!-- Google Play icon (simplified triangle) -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M3.5 2.8c-.3.3-.5.7-.5 1.2v16c0 .5.2.9.5 1.2l9.6-9.2-9.6-9.2zM14.2 12l2.6-2.5-1.7-1-2.9 2.8 2 1.9zm0 0l-2 1.9 2.9 2.8 1.7-1-2.6-2.5zm3.6-3.5L20.5 7c.7-.4 1.2-.3 1.6.1.4.4.4 1 0 1.4L18 12l-1.2-1.2zM17.8 15.5L18 12l4.1 3.5c.4.4.4 1 0 1.4-.4.4-.9.5-1.6.1l-2.7-1.5z"/>
             </svg>
@@ -377,5 +529,80 @@
 
     </div>
   </main>
+
+  <!-- ====== DEMO VIDEO MODAL ====== -->
+  <div class="modalOverlay" id="demoModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="ECS demo video modal">
+    <div class="modal" role="document">
+      <div class="modalHeader">
+        <div class="modalTitle">
+          Demo Video
+          <span class="chip" aria-hidden="true">Replace URL when ready</span>
+        </div>
+        <button class="closeBtn" type="button" id="closeDemo" aria-label="Close demo video">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7A1 1 0 0 0 5.7 7.1l4.9 4.9-4.9 4.9a1 1 0 1 0 1.4 1.4l4.9-4.9 4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z"/></svg>
+        </button>
+      </div>
+      <div class="modalBody">
+        <div class="videoFrame">
+          <!-- Replace this with your real demo embed.
+               For YouTube: https://www.youtube.com/embed/VIDEO_ID
+               For Vimeo:   https://player.vimeo.com/video/VIDEO_ID
+               If you want local mp4 instead, tell me and I’ll swap to <video>. -->
+          <iframe
+            id="demoIframe"
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1"
+            title="ECS Demo Video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="modalHint">
+          Tip: When you have your real demo link, replace the iframe <code>src</code> URL in this file.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const modal = document.getElementById("demoModal");
+      const openBtn = document.getElementById("openDemo");
+      const closeBtn = document.getElementById("closeDemo");
+      const iframe = document.getElementById("demoIframe");
+
+      let lastFocusEl = null;
+      const originalSrc = iframe.getAttribute("src");
+
+      function openModal() {
+        lastFocusEl = document.activeElement;
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        closeBtn.focus();
+      }
+
+      function closeModal() {
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "hidden"; // keep no-scroll rule
+        // stop playback by resetting src
+        iframe.setAttribute("src", originalSrc);
+        if (lastFocusEl && typeof lastFocusEl.focus === "function") lastFocusEl.focus();
+      }
+
+      openBtn.addEventListener("click", openModal);
+      closeBtn.addEventListener("click", closeModal);
+
+      // click outside modal closes
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      // escape closes
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") {
+          closeModal();
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
