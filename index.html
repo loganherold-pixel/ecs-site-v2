@@ -53,6 +53,7 @@
         rgba(8,12,18,0.80) 55%,
         rgba(8,12,18,0.92) 100%
       );
+      pointer-events:none;
     }
 
     /* subtle vignette for depth */
@@ -60,8 +61,30 @@
       content:"";
       position:absolute;
       inset:-10%;
-      background: radial-gradient(circle at 50% 35%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.65) 62%, rgba(0,0,0,0.85) 100%);
+      background: radial-gradient(circle at 50% 35%, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.60) 62%, rgba(0,0,0,0.85) 100%);
       pointer-events:none;
+    }
+
+    /* ====== SUBTLE TOPO ANIMATION LAYER ====== */
+    .topoLayer{
+      position:absolute;
+      inset:-20%;
+      z-index:1;
+      pointer-events:none;
+      opacity: 0.12;
+      mix-blend-mode: overlay;
+      filter: blur(0.2px);
+      transform: translate3d(0,0,0);
+      animation: topoDrift 18s linear infinite;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 900 600'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='0.55' stroke-width='1.2'%3E%3Cpath d='M-10 120 C 140 40, 240 220, 420 140 C 560 80, 690 160, 920 70'/%3E%3Cpath d='M-10 170 C 140 90, 240 270, 420 190 C 560 130, 690 210, 920 120'/%3E%3Cpath d='M-10 220 C 140 140, 240 320, 420 240 C 560 180, 690 260, 920 170'/%3E%3Cpath d='M-10 270 C 140 190, 240 370, 420 290 C 560 230, 690 310, 920 220'/%3E%3Cpath d='M-10 320 C 140 240, 240 420, 420 340 C 560 280, 690 360, 920 270'/%3E%3Cpath d='M-10 370 C 140 290, 240 470, 420 390 C 560 330, 690 410, 920 320'/%3E%3Cpath d='M-10 420 C 140 340, 240 520, 420 440 C 560 380, 690 460, 920 370'/%3E%3Cpath d='M-10 470 C 140 390, 240 570, 420 490 C 560 430, 690 510, 920 420'/%3E%3Cpath d='M-10 520 C 140 440, 240 620, 420 540 C 560 480, 690 560, 920 470'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 900px 600px;
+      background-repeat: repeat;
+    }
+
+    @keyframes topoDrift{
+      0%   { transform: translate3d(0,0,0) scale(1.02); }
+      50%  { transform: translate3d(-40px, -24px, 0) scale(1.02); }
+      100% { transform: translate3d(-80px, -48px, 0) scale(1.02); }
     }
 
     /* ====== CONTENT WRAP ====== */
@@ -308,12 +331,13 @@
     .modalOverlay{
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.65);
+      background: rgba(0,0,0,0.55);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 50;
       padding: 18px;
+      backdrop-filter: blur(2px);
     }
 
     .modalOverlay[aria-hidden="false"]{
@@ -328,6 +352,24 @@
       box-shadow: 0 30px 90px rgba(0,0,0,0.65);
       backdrop-filter: blur(12px);
       overflow: hidden;
+      position: relative;
+      z-index: 60;
+    }
+
+    /* ====== SOFT BLUR BACKGROUND WHILE MODAL OPEN ====== */
+    .pageBlur{
+      filter: blur(0);
+      transform: translateZ(0);
+      transition: filter 0.25s ease;
+      will-change: filter;
+    }
+
+    body.modal-open .pageBlur{
+      filter: blur(6px);
+    }
+
+    body.modal-open .topoLayer{
+      opacity: 0.08; /* slightly reduce during modal */
     }
 
     .modalHeader{
@@ -438,97 +480,104 @@
     @media (prefers-reduced-motion: reduce){
       .wrap{ animation: none; opacity: 1; transform: none; }
       .cta, .ghost, .badge, .closeBtn{ transition: none; }
+      .topoLayer{ animation: none; }
+      .pageBlur{ transition: none; }
     }
   </style>
 </head>
 
 <body>
-  <main class="hero" role="main" aria-label="Expedition Command Systems landing">
-    <div class="wrap">
+  <!-- Wrap the entire page content for blur effect -->
+  <div class="pageBlur" id="pageRoot">
+    <main class="hero" role="main" aria-label="Expedition Command Systems landing">
+      <div class="topoLayer" aria-hidden="true"></div>
 
-      <div class="brandline" aria-label="ECS tagline">
-        <div class="dot" aria-hidden="true"></div>
-        <span>Hybrid Civilian + Agency Ready • Offline-first mission design</span>
-      </div>
+      <div class="wrap">
 
-      <h1>Expedition Command Systems</h1>
-
-      <p class="sub">
-        Tactical-grade expedition planning, loadout configuration, and real-time mission dashboards—
-        built to bridge your build, your route, and your operational risk in one system.
-      </p>
-
-      <section class="row" aria-label="Key capabilities">
-        <div class="pill">
-          <div class="iconbox" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-4 1.4 1.4-5.4 5.4L7.6 12.4 9 11zM4 5h10v2H4V5zm0 6h4v2H4v-2zm0 6h10v2H4v-2z"/></svg>
-          </div>
-          <div>
-            <h3>Mission Planning</h3>
-            <p>Framework setup, trip parameters, readiness scoring, and deployment control—fast and structured.</p>
-          </div>
+        <div class="brandline" aria-label="ECS tagline">
+          <div class="dot" aria-hidden="true"></div>
+          <span>Hybrid Civilian + Agency Ready • Offline-first mission design</span>
         </div>
 
-        <div class="pill">
-          <div class="iconbox" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zM13 3v6h8V3h-8z"/></svg>
-          </div>
-          <div>
-            <h3>Live Dashboard</h3>
-            <p>Widget-based ops view for systems, attitude, consumables, alerts—built for real-time decisions.</p>
-          </div>
-        </div>
+        <h1>Expedition Command Systems</h1>
 
-        <div class="pill">
-          <div class="iconbox" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 0 1 7-7zm0 9.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5.5z"/></svg>
+        <p class="sub">
+          Tactical-grade expedition planning, loadout configuration, and real-time mission dashboards—
+          built to bridge your build, your route, and your operational risk in one system.
+        </p>
+
+        <section class="row" aria-label="Key capabilities">
+          <div class="pill">
+            <div class="iconbox" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-4 1.4 1.4-5.4 5.4L7.6 12.4 9 11zM4 5h10v2H4V5zm0 6h4v2H4v-2zm0 6h10v2H4v-2z"/></svg>
+            </div>
+            <div>
+              <h3>Mission Planning</h3>
+              <p>Framework setup, trip parameters, readiness scoring, and deployment control—fast and structured.</p>
+            </div>
           </div>
-          <div>
-            <h3>Navigation Bridge</h3>
-            <p>Imports/exports across OnX, Garmin, GPX—turn route data into fuel/water/time risk clarity.</p>
+
+          <div class="pill">
+            <div class="iconbox" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zM13 3v6h8V3h-8z"/></svg>
+            </div>
+            <div>
+              <h3>Live Dashboard</h3>
+              <p>Widget-based ops view for systems, attitude, consumables, alerts—built for real-time decisions.</p>
+            </div>
           </div>
-        </div>
-      </section>
 
-      <div class="ctaRow" aria-label="Primary actions">
-        <a class="cta" href="#" onclick="alert('Hook this to your signup/demo flow when ready.'); return false;">
-          Explore the System
-        </a>
+          <div class="pill">
+            <div class="iconbox" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 0 1 7-7zm0 9.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5.5z"/></svg>
+            </div>
+            <div>
+              <h3>Navigation Bridge</h3>
+              <p>Imports/exports across OnX, Garmin, GPX—turn route data into fuel/water/time risk clarity.</p>
+            </div>
+          </div>
+        </section>
 
-        <button class="ghost" type="button" id="openDemo" aria-haspopup="dialog" aria-controls="demoModal">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8.6v6.8c0 .6.7 1 1.2.7l6-3.4c.5-.3.5-1 0-1.3l-6-3.4c-.5-.3-1.2.1-1.2.6zM12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/></svg>
-          Demo Video
-        </button>
-
-        <div class="storeBadges" aria-label="App store links">
-          <a class="badge" href="#" aria-label="Download on the App Store" onclick="alert('Add your App Store link here when ready.'); return false;">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M16.7 13.2c0 2.7 2.4 3.6 2.4 3.6s-1.8 5.2-4.2 5.2c-1.1 0-2-.8-3.2-.8s-2.2.8-3.2.8C3.1 22 1 16.2 1 13.1c0-3 1.8-4.6 3.6-4.6 1.1 0 2.1.8 3.2.8s1.9-.8 3.2-.8c.5 0 2.3.1 3.4 1.7-2.9 1.6-2.7 5.1-.7 6zM13.9 1.8c.7-.9 1.2-2.1 1.1-3.3-1 .1-2.2.7-2.9 1.6-.7.8-1.2 2-1 3.2 1.1.1 2.2-.6 2.8-1.5z"/>
-            </svg>
-            <span class="txt">
-              <span class="small">Download on the</span>
-              <span class="big">App Store</span>
-            </span>
+        <div class="ctaRow" aria-label="Primary actions">
+          <a class="cta" href="#" onclick="alert('Hook this to your signup/demo flow when ready.'); return false;">
+            Explore the System
           </a>
 
-          <a class="badge" href="#" aria-label="Get it on Google Play" onclick="alert('Add your Google Play link here when ready.'); return false;">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3.5 2.8c-.3.3-.5.7-.5 1.2v16c0 .5.2.9.5 1.2l9.6-9.2-9.6-9.2zM14.2 12l2.6-2.5-1.7-1-2.9 2.8 2 1.9zm0 0l-2 1.9 2.9 2.8 1.7-1-2.6-2.5zm3.6-3.5L20.5 7c.7-.4 1.2-.3 1.6.1.4.4.4 1 0 1.4L18 12l-1.2-1.2zM17.8 15.5L18 12l4.1 3.5c.4.4.4 1 0 1.4-.4.4-.9.5-1.6.1l-2.7-1.5z"/>
-            </svg>
-            <span class="txt">
-              <span class="small">Get it on</span>
-              <span class="big">Google Play</span>
-            </span>
-          </a>
+          <button class="ghost" type="button" id="openDemo" aria-haspopup="dialog" aria-controls="demoModal">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8.6v6.8c0 .6.7 1 1.2.7l6-3.4c.5-.3.5-1 0-1.3l-6-3.4c-.5-.3-1.2.1-1.2.6zM12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/></svg>
+            Demo Video
+          </button>
+
+          <div class="storeBadges" aria-label="App store links">
+            <a class="badge" href="#" aria-label="Download on the App Store" onclick="alert('Add your App Store link here when ready.'); return false;">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M16.7 13.2c0 2.7 2.4 3.6 2.4 3.6s-1.8 5.2-4.2 5.2c-1.1 0-2-.8-3.2-.8s-2.2.8-3.2.8C3.1 22 1 16.2 1 13.1c0-3 1.8-4.6 3.6-4.6 1.1 0 2.1.8 3.2.8s1.9-.8 3.2-.8c.5 0 2.3.1 3.4 1.7-2.9 1.6-2.7 5.1-.7 6zM13.9 1.8c.7-.9 1.2-2.1 1.1-3.3-1 .1-2.2.7-2.9 1.6-.7.8-1.2 2-1 3.2 1.1.1 2.2-.6 2.8-1.5z"/>
+              </svg>
+              <span class="txt">
+                <span class="small">Download on the</span>
+                <span class="big">App Store</span>
+              </span>
+            </a>
+
+            <a class="badge" href="#" aria-label="Get it on Google Play" onclick="alert('Add your Google Play link here when ready.'); return false;">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3.5 2.8c-.3.3-.5.7-.5 1.2v16c0 .5.2.9.5 1.2l9.6-9.2-9.6-9.2zM14.2 12l2.6-2.5-1.7-1-2.9 2.8 2 1.9zm0 0l-2 1.9 2.9 2.8 1.7-1-2.6-2.5zm3.6-3.5L20.5 7c.7-.4 1.2-.3 1.6.1.4.4.4 1 0 1.4L18 12l-1.2-1.2zM17.8 15.5L18 12l4.1 3.5c.4.4.4 1 0 1.4-.4.4-.9.5-1.6.1l-2.7-1.5z"/>
+              </svg>
+              <span class="txt">
+                <span class="small">Get it on</span>
+                <span class="big">Google Play</span>
+              </span>
+            </a>
+          </div>
         </div>
-      </div>
 
-      <div class="footer">
-        © 2026 Expedition Command Systems • Tactical-grade expedition software
-      </div>
+        <div class="footer">
+          © 2026 Expedition Command Systems • Tactical-grade expedition software
+        </div>
 
-    </div>
-  </main>
+      </div>
+    </main>
+  </div>
 
   <!-- ====== DEMO VIDEO MODAL ====== -->
   <div class="modalOverlay" id="demoModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="ECS demo video modal">
@@ -544,10 +593,6 @@
       </div>
       <div class="modalBody">
         <div class="videoFrame">
-          <!-- Replace this with your real demo embed.
-               For YouTube: https://www.youtube.com/embed/VIDEO_ID
-               For Vimeo:   https://player.vimeo.com/video/VIDEO_ID
-               If you want local mp4 instead, tell me and I’ll swap to <video>. -->
           <iframe
             id="demoIframe"
             src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1"
@@ -557,7 +602,7 @@
           </iframe>
         </div>
         <div class="modalHint">
-          Tip: When you have your real demo link, replace the iframe <code>src</code> URL in this file.
+          Replace the iframe <code>src</code> with your real demo embed when ready (YouTube/Vimeo).
         </div>
       </div>
     </div>
@@ -576,27 +621,24 @@
       function openModal() {
         lastFocusEl = document.activeElement;
         modal.setAttribute("aria-hidden", "false");
-        document.body.style.overflow = "hidden";
+        document.body.classList.add("modal-open");
         closeBtn.focus();
       }
 
       function closeModal() {
         modal.setAttribute("aria-hidden", "true");
-        document.body.style.overflow = "hidden"; // keep no-scroll rule
-        // stop playback by resetting src
-        iframe.setAttribute("src", originalSrc);
+        document.body.classList.remove("modal-open");
+        iframe.setAttribute("src", originalSrc); // stop playback
         if (lastFocusEl && typeof lastFocusEl.focus === "function") lastFocusEl.focus();
       }
 
       openBtn.addEventListener("click", openModal);
       closeBtn.addEventListener("click", closeModal);
 
-      // click outside modal closes
       modal.addEventListener("click", (e) => {
         if (e.target === modal) closeModal();
       });
 
-      // escape closes
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") {
           closeModal();
