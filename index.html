@@ -9,7 +9,6 @@
   <style>
     :root{
       --bg0:#0B0E12;
-      --bg1:#0F141A;
       --panel:#111418;
       --stroke:#1E232B;
       --text:#F3F4F6;
@@ -25,9 +24,10 @@
     html, body { height: 100%; }
     body{
       margin:0;
-      background: radial-gradient(1200px 700px at 60% 10%, rgba(198,168,90,.08), transparent 55%),
-                  radial-gradient(900px 600px at 15% 40%, rgba(198,168,90,.05), transparent 60%),
-                  var(--bg0);
+      background:
+        radial-gradient(1200px 700px at 60% 10%, rgba(198,168,90,.08), transparent 55%),
+        radial-gradient(900px 600px at 15% 40%, rgba(198,168,90,.05), transparent 60%),
+        var(--bg0);
       color:var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       overflow:hidden;
@@ -97,9 +97,7 @@
       78%{ opacity:.55;}
       90%{ transform: translateX(55%); opacity:.0;}
     }
-    .brandText{
-      display:flex; flex-direction:column; line-height:1.1;
-    }
+    .brandText{ display:flex; flex-direction:column; line-height:1.1; }
     .brandText .kicker{
       font-size: 11px;
       letter-spacing: .20em;
@@ -156,6 +154,16 @@
     .btnPrimary{
       background: linear-gradient(180deg, rgba(198,168,90,.22), rgba(198,168,90,.08));
       border-color: rgba(226,196,109,.80);
+      position: relative;
+      overflow:hidden;
+    }
+    /* subtle inner highlight for “hardware” feel */
+    .btnPrimary::before{
+      content:"";
+      position:absolute; left:10px; right:10px; top:7px; height:1px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,.20), transparent);
+      opacity:.55;
+      pointer-events:none;
     }
     .btnPrimary:hover{
       background: rgba(198,168,90,.95);
@@ -170,7 +178,7 @@
       grid-template-columns: 1.25fr .95fr;
       gap: clamp(14px, 2.2vh, 22px);
       align-items: stretch;
-      min-height: 0; /* allow children to size without overflow */
+      min-height: 0;
     }
 
     /* HERO PANEL */
@@ -186,7 +194,6 @@
       position:relative;
       overflow:hidden;
     }
-
     .hero::before{
       content:"";
       position:absolute;
@@ -243,11 +250,7 @@
       margin-top: clamp(14px, 2.4vh, 22px);
     }
 
-    .bullets{
-      display:grid;
-      gap: 10px;
-      min-height: 0;
-    }
+    .bullets{ display:grid; gap: 10px; min-height: 0; }
     .bullet{
       display:flex;
       gap:12px;
@@ -268,11 +271,7 @@
       margin-top: 2px;
     }
     .bullet .icon svg{ width: 16px; height:16px; }
-    .bullet .title{
-      font-weight: 650;
-      font-size: 14px;
-      margin: 0;
-    }
+    .bullet .title{ font-weight: 650; font-size: 14px; margin: 0; }
     .bullet .desc{
       margin: 3px 0 0;
       font-size: 13px;
@@ -285,9 +284,9 @@
       height: 100%;
       min-height: 0;
       border-radius: 18px;
-      border: 1px solid rgba(198,168,90,.22);
+      border: 1px solid rgba(198,168,90,.26); /* slightly stronger stroke */
       background:
-        radial-gradient(700px 400px at 50% 10%, rgba(198,168,90,.18), transparent 55%),
+        radial-gradient(700px 400px at 50% 10%, rgba(198,168,90,.14), transparent 55%),
         linear-gradient(180deg, rgba(17,20,24,.92), rgba(11,14,18,.98));
       overflow:hidden;
       position:relative;
@@ -309,10 +308,7 @@
       text-transform: uppercase;
       color: rgba(198,168,90,.85);
     }
-    .mockTop .status{
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .mockTop .status{ font-size: 12px; color: var(--muted); }
     .mockBody{
       padding: 14px;
       display:grid;
@@ -349,24 +345,16 @@
     .mockBanner{
       border-radius: 14px;
       border: 1px solid rgba(198,168,90,.22);
-      background: rgba(198,168,90,.08);
+      background: rgba(198,168,90,.07); /* slightly reduced glow */
       padding: 12px;
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:10px;
     }
-    .mockBanner .left{
-      display:flex; flex-direction:column; gap:3px;
-    }
-    .mockBanner .t{
-      font-weight: 700;
-      font-size: 13px;
-    }
-    .mockBanner .s{
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .mockBanner .left{ display:flex; flex-direction:column; gap:3px; }
+    .mockBanner .t{ font-weight: 700; font-size: 13px; }
+    .mockBanner .s{ font-size: 12px; color: var(--muted); }
     .mockBanner .badge{
       font-size: 11px;
       letter-spacing: .18em;
@@ -380,16 +368,21 @@
 
     .heroBottom{
       display:flex;
-      gap: 10px;
       align-items:center;
       justify-content:flex-start;
       margin-top: clamp(12px, 2.2vh, 18px);
-      flex-wrap: wrap;
+      min-height: 0;
     }
-    .storeRow{
+
+    /* Store buttons container to unify the design language */
+    .storeWrap{
       display:flex;
       gap: 10px;
       flex-wrap: wrap;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.02);
     }
     .storeBtn{
       display:flex;
@@ -408,15 +401,11 @@
       border-color: rgba(226,196,109,.45);
       background: rgba(198,168,90,.08);
     }
-    .storeBtn .meta{
-      display:flex; flex-direction:column; line-height:1.05;
-    }
+    .storeBtn .meta{ display:flex; flex-direction:column; line-height:1.05; }
     .storeBtn .meta span:first-child{
       font-size: 10px; color: var(--muted2); letter-spacing:.14em; text-transform: uppercase;
     }
-    .storeBtn .meta span:last-child{
-      font-size: 13px; font-weight: 700;
-    }
+    .storeBtn .meta span:last-child{ font-size: 13px; font-weight: 700; }
     .storeBtn svg{ width: 18px; height: 18px; opacity:.92; }
 
     /* PRICING PANEL */
@@ -427,7 +416,7 @@
       box-shadow: var(--shadow);
       padding: clamp(18px, 3.2vh, 28px);
       display:grid;
-      grid-template-rows: auto 1fr auto;
+      grid-template-rows: auto auto 1fr auto; /* add a row for ProIncludes */
       min-height: 0;
       position:relative;
       overflow:hidden;
@@ -452,11 +441,7 @@
       position:relative;
       z-index:1;
     }
-    .planTitle{
-      display:flex;
-      flex-direction:column;
-      gap: 6px;
-    }
+    .planTitle{ display:flex; flex-direction:column; gap: 6px; }
     .planTitle .k{
       font-size: 11px;
       letter-spacing: .22em;
@@ -474,6 +459,13 @@
       margin:0;
       line-height:1.35;
     }
+
+    /* micro-line under “Pricing” to frame decision */
+    .planTitle .p strong{
+      color: rgba(198,168,90,.92);
+      font-weight: 700;
+    }
+
     .priceTag{
       text-align:right;
       white-space:nowrap;
@@ -482,13 +474,15 @@
       font-size: 34px;
       font-weight: 900;
       letter-spacing: -0.02em;
+      line-height: 1.0;
     }
     .priceTag .per{
       color: rgba(198,168,90,.9);
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: .18em;
       text-transform: uppercase;
-      margin-top: 2px;
+      margin-top: 0px; /* tighter */
+      opacity: .95;
     }
 
     .compare{
@@ -520,10 +514,7 @@
       align-items:baseline;
       gap: 10px;
     }
-    .cardHead .name{
-      font-weight: 850;
-      font-size: 15px;
-    }
+    .cardHead .name{ font-weight: 850; font-size: 15px; }
     .cardHead .tag{
       font-size: 10px;
       letter-spacing: .22em;
@@ -548,6 +539,9 @@
       color: var(--muted);
       line-height: 1.35;
     }
+    /* Pro list readability bump */
+    .card.pro .feat li{ color: rgba(243,244,246,.82); }
+
     .check{
       width: 16px;
       height: 16px;
@@ -565,16 +559,64 @@
     }
     .check svg{ width: 12px; height: 12px; opacity:.9; }
     .pro .check svg{ opacity: 1; }
+
     .mutedNote{
       margin-top: 10px;
       color: var(--muted2);
       font-size: 12px;
     }
 
+    /* NEW: Pro Includes strip (fills dead zone without clutter) */
+    .proStrip{
+      position:relative;
+      z-index:1;
+      margin-top: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(226,196,109,.20);
+      background: rgba(198,168,90,.05);
+      padding: 12px 12px;
+      display:grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items:start;
+    }
+    .proStrip .label{
+      font-size: 10px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(198,168,90,.92);
+      padding-top: 2px;
+      white-space: nowrap;
+    }
+    .proStrip ul{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+    }
+    .proStrip li{
+      display:flex;
+      align-items:flex-start;
+      gap: 8px;
+      font-size: 12.5px;
+      color: rgba(243,244,246,.84);
+      line-height: 1.3;
+    }
+    .proDot{
+      width: 8px; height: 8px;
+      margin-top: 4px;
+      border-radius: 999px;
+      background: rgba(226,196,109,.95);
+      box-shadow: 0 0 0 4px rgba(198,168,90,.14);
+      flex: 0 0 auto;
+    }
+
     .cta{
       position:relative;
       z-index:1;
-      margin-top: 16px;
+      margin-top: 14px;
       display:grid;
       gap: 10px;
       align-content:end;
@@ -592,25 +634,33 @@
     }
     .btnWide{
       flex: 1 1 240px;
-      padding: 12px 16px;
+      padding: 14px 16px; /* slightly taller */
       font-size: 14px;
     }
     .btnGhost{
-      border-color: rgba(255,255,255,.12);
-      color: var(--muted);
+      border-color: rgba(255,255,255,.10);
+      color: rgba(156,163,175,.90);
+      background: rgba(255,255,255,.03);
+    }
+    .btnGhost:hover{
+      border-color: rgba(255,255,255,.16);
+      background: rgba(255,255,255,.04);
+      box-shadow:none;
     }
 
-    /* Responsive: stack panels on narrower screens, still no scroll */
+    /* Responsive */
     @media (max-width: 980px){
       main{ grid-template-columns: 1fr; }
       .heroMid{ grid-template-columns: 1fr; }
       .mock{ height: clamp(180px, 24vh, 260px); }
+      .proStrip ul{ grid-template-columns: 1fr; }
     }
 
     /* Very short viewports: auto-trim content instead of scrolling */
     @media (max-height: 720px){
       .bullet:nth-child(3){ display:none; }
-      .feat li:nth-child(n+6){ display:none; } /* keep top 5 bullets per card */
+      .feat li:nth-child(n+6){ display:none; }
+      .proStrip{ display:none; } /* keep the no-scroll guarantee */
     }
     @media (max-height: 640px){
       .subhead{ display:none; }
@@ -728,7 +778,7 @@
         </div>
 
         <div class="heroBottom" aria-label="Store buttons">
-          <div class="storeRow">
+          <div class="storeWrap">
             <!-- Replace hrefs with your real store URLs -->
             <a class="storeBtn" href="#" aria-label="Download on the App Store">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(243,244,246,.92)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -760,7 +810,7 @@
           <div class="planTitle">
             <div class="k">Pricing</div>
             <h2 class="t" style="margin:0;">Free vs Pro</h2>
-            <p class="p">Free is preparation. Pro is operational capability.</p>
+            <p class="p">Free is planning. <strong>Pro is Expedition Mode.</strong></p>
           </div>
 
           <div class="priceTag" aria-label="Pro price">
@@ -849,6 +899,17 @@
           </div>
         </div>
 
+        <!-- Pro Includes strip (fills void, increases conversion) -->
+        <div class="proStrip" aria-label="Pro includes">
+          <div class="label">Pro includes</div>
+          <ul>
+            <li><span class="proDot" aria-hidden="true"></span>High-contrast, glance-ready Expedition Mode</li>
+            <li><span class="proDot" aria-hidden="true"></span>Saved layouts for Highway vs Expedition</li>
+            <li><span class="proDot" aria-hidden="true"></span>Projections tuned to your vehicle build</li>
+            <li><span class="proDot" aria-hidden="true"></span>Full history, exports, and route tooling</li>
+          </ul>
+        </div>
+
         <div class="cta" aria-label="Call to action">
           <div class="ctaRow">
             <button class="btn btnPrimary btnWide" type="button">Start ECS Pro</button>
@@ -861,778 +922,10 @@
   </div>
 
   <script>
-    // Optional: wire these buttons later to your real flows.
-    // Keeping JS minimal to preserve reliability.
+    // Keep JS minimal for reliability
     document.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        // Placeholder action:
-        // Replace with: open modal, route to signup, or deep link to stores.
-        console.log('CTA clicked:', btn.textContent.trim());
-      });
+      btn.addEventListener('click', () => console.log('CTA clicked:', btn.textContent.trim()));
     });
   </script>
 </body>
-</html>      background-size: 900px 600px;
-      background-repeat: repeat;
-    }
-
-    @keyframes topoDrift{
-      0%   { transform: translate3d(0,0,0) scale(1.02); }
-      50%  { transform: translate3d(-40px, -24px, 0) scale(1.02); }
-      100% { transform: translate3d(-80px, -48px, 0) scale(1.02); }
-    }
-
-    /* ====== CONTENT WRAP ====== */
-    .wrap{
-      position:relative;
-      z-index:2;
-      width:min(1080px, calc(100vw - 48px));
-      display:grid;
-      gap: 16px;
-      justify-items:center;
-      text-align:center;
-      transform: translateY(-6px);
-      animation: fadeUp 0.9s ease-out forwards;
-      opacity:0;
-    }
-
-    @keyframes fadeUp{
-      to { opacity:1; transform: translateY(0); }
-    }
-
-    /* ====== FLAGSHIP LOGO: glow + shine + hover pulse + parallax ====== */
-.flagshipLogoWrap{
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  /* keeps effects contained */
-  border-radius: 22px;
-}
-
-.flagshipLogo{
-  width: clamp(220px, 24vw, 320px); /* 200% larger */
-  height: auto;
-  user-select: none;
-  -webkit-user-drag: none;
-
-  /* micro-parallax target */
-  transform: translate3d(var(--px,0px), var(--py,0px), 0) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
-  transition:
-    transform 220ms ease,
-    filter 220ms ease;
-
-  /* subtle always-on amber glow */
-  filter:
-    drop-shadow(0 18px 44px rgba(0,0,0,0.55))
-    drop-shadow(0 0 18px rgba(255,178,0,0.14))
-    drop-shadow(0 0 36px rgba(255,178,0,0.08));
-}
-
-/* ambient pulse (very soft) */
-.flagshipLogoWrap::before{
-  content:"";
-  position:absolute;
-  inset: -10%;
-  border-radius: 28px;
-  background: radial-gradient(circle at 50% 45%, rgba(255,178,0,0.18) 0%, rgba(255,178,0,0.0) 62%);
-  opacity: 0.55;
-  filter: blur(16px);
-  pointer-events:none;
-  animation: amberBreath 5.2s ease-in-out infinite;
-}
-
-/* intermittent shine sweep (left->right) */
-.flagshipLogoWrap::after{
-  content:"";
-  position:absolute;
-  inset: -12%;
-  border-radius: 28px;
-  pointer-events:none;
-
-  /* thin highlight band */
-  background: linear-gradient(
-    110deg,
-    rgba(255,255,255,0.00) 0%,
-    rgba(255,255,255,0.00) 42%,
-    rgba(255,214,120,0.10) 50%,
-    rgba(255,255,255,0.00) 58%,
-    rgba(255,255,255,0.00) 100%
-  );
-  transform: translateX(-140%) skewX(-14deg);
-  opacity: 0; /* turned on during the sweep keyframes */
-  mix-blend-mode: screen;
-  filter: blur(0.4px);
-  animation: shineSweep 9.5s ease-in-out infinite;
-}
-
-/* hover pulse: slightly stronger glow + gentle scale */
-.flagshipLogoWrap:hover .flagshipLogo{
-  transform:
-    translate3d(var(--px,0px), var(--py,0px), 0)
-    rotateX(var(--rx,0deg))
-    rotateY(var(--ry,0deg))
-    scale(1.03);
-  filter:
-    drop-shadow(0 18px 44px rgba(0,0,0,0.55))
-    drop-shadow(0 0 22px rgba(255,178,0,0.20))
-    drop-shadow(0 0 46px rgba(255,178,0,0.12));
-}
-
-.flagshipLogoWrap:hover::before{
-  opacity: 0.75;
-}
-
-/* Keyframes */
-@keyframes amberBreath{
-  0%, 100% { opacity: 0.45; transform: scale(0.98); }
-  50%      { opacity: 0.62; transform: scale(1.02); }
-}
-
-@keyframes shineSweep{
-  0%   { opacity: 0; transform: translateX(-140%) skewX(-14deg); }
-  55%  { opacity: 0; transform: translateX(-140%) skewX(-14deg); } /* idle */
-  62%  { opacity: 0.55; }
-  70%  { opacity: 0.30; transform: translateX(140%) skewX(-14deg); }
-  72%  { opacity: 0; transform: translateX(140%) skewX(-14deg); }
-  100% { opacity: 0; transform: translateX(140%) skewX(-14deg); }
-}
-
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .flagshipLogoWrap::before,
-  .flagshipLogoWrap::after{
-    animation: none;
-  }
-  .flagshipLogo{
-    transition: none;
-    transform: none !important;
-  }
-}
-
-    /* ====== TOP BRAND LINE ====== */
-    .brandline{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 14px;
-      border-radius: 999px;
-      background: rgba(10,13,18,0.45);
-      border: 1px solid var(--stroke);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-      backdrop-filter: blur(10px);
-    }
-
-    .dot{
-      width:10px; height:10px; border-radius:50%;
-      background: var(--primary);
-      box-shadow: 0 0 18px rgba(255,178,0,0.35);
-    }
-
-    .brandline span{
-      color: var(--muted);
-      font-size: 0.92rem;
-      letter-spacing: 0.4px;
-      white-space: nowrap;
-    }
-
-    /* ====== TITLE / SUBTITLE ====== */
-    h1{
-      font-size: clamp(2.05rem, 3.2vw, 3rem);
-      font-weight: 800;
-      letter-spacing: 0.8px;
-      text-shadow: 0 12px 40px rgba(0,0,0,0.55);
-      margin-top: 0px;
-    }
-
-    .sub{
-      color: var(--muted);
-      max-width: 860px;
-      font-size: clamp(0.98rem, 1.35vw, 1.15rem);
-      line-height: 1.6;
-      padding: 0 8px;
-    }
-
-    /* ====== FEATURE ROW (COMPACT, NO OVERLOAD) ====== */
-    .row{
-      width: 100%;
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 2px;
-    }
-
-    .pill{
-      background: var(--panel);
-      border: 1px solid var(--stroke);
-      border-radius: 14px;
-      padding: 16px 16px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      text-align:left;
-      min-height: 96px;
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-    }
-
-    .iconbox{
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      background: rgba(255,178,0,0.12);
-      border: 1px solid rgba(255,178,0,0.22);
-      display:grid;
-      place-items:center;
-      flex: 0 0 auto;
-    }
-
-    .iconbox svg{ width: 18px; height: 18px; fill: var(--primary); }
-
-    .pill h3{
-      font-size: 0.98rem;
-      margin-bottom: 4px;
-      color: var(--text);
-      letter-spacing: 0.2px;
-    }
-
-    .pill p{
-      font-size: 0.9rem;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    /* ====== CTA + STORE BADGES ====== */
-    .ctaRow{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap: 14px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
-
-    .cta{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding: 14px 22px;
-      border-radius: 10px;
-      background: var(--primary);
-      color:#000;
-      font-weight:700;
-      letter-spacing:0.2px;
-      border: 0;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-      box-shadow: 0 10px 25px rgba(255,178,0,0.20);
-      text-decoration:none;
-      min-width: 220px;
-    }
-
-    .cta:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 14px 34px rgba(255,178,0,0.28);
-      opacity: 0.96;
-    }
-
-    .ghost{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding: 14px 18px;
-      border-radius: 10px;
-      background: rgba(20,25,34,0.55);
-      color: var(--text);
-      font-weight: 650;
-      letter-spacing: 0.2px;
-      border: 1px solid var(--stroke);
-      cursor:pointer;
-      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-      backdrop-filter: blur(10px);
-      text-decoration:none;
-    }
-
-    .ghost:hover{
-      transform: translateY(-2px);
-      border-color: rgba(255,178,0,0.22);
-      background: rgba(20,25,34,0.68);
-    }
-
-    .ghost svg{
-      width: 18px;
-      height: 18px;
-      fill: var(--primary);
-      opacity: 0.95;
-    }
-
-    .storeBadges{
-      display:flex;
-      gap: 10px;
-      align-items:center;
-      justify-content:center;
-    }
-
-    /* FIX: lock store icon color to clean white (prevents “discoloration”) */
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: var(--panel2);
-      border: 1px solid var(--stroke);
-      color: #ffffff;            /* <- forces SVG to white via currentColor */
-      text-decoration:none;
-      backdrop-filter: blur(10px);
-      transition: transform 0.2s ease, border-color 0.2s ease;
-      height: 46px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-
-    .badge:hover{
-      transform: translateY(-2px);
-      border-color: rgba(255,178,0,0.20);
-    }
-
-    .badge .txt{
-      display:flex;
-      flex-direction:column;
-      line-height: 1.05;
-      text-align:left;
-    }
-
-    .badge .small{
-      font-size: 0.68rem;
-      color: var(--muted);
-      letter-spacing: 0.3px;
-    }
-
-    .badge .big{
-      font-size: 0.88rem;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      white-space: nowrap;
-    }
-
-    .badge svg{
-      width: 22px;
-      height: 22px;
-      flex: 0 0 auto;
-      fill: currentColor;        /* <- key */
-      opacity: 1;                /* <- key */
-    }
-
-    .badge svg *{
-      fill: currentColor !important; /* <- forces any nested path fill */
-      opacity: 1 !important;
-    }
-
-    /* ====== FOOTER (SINGLE-LINE, NO SCROLL) ====== */
-    .footer{
-      margin-top: 2px;
-      color: rgba(148,163,184,0.85);
-      font-size: 0.82rem;
-      letter-spacing: 0.2px;
-      padding-bottom: 4px;
-    }
-
-    /* ====== MODAL (DEMO VIDEO) ====== */
-    .modalOverlay{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      padding: 18px;
-      backdrop-filter: blur(2px);
-    }
-
-    .modalOverlay[aria-hidden="false"]{
-      display: flex;
-    }
-
-    .modal{
-      width: min(860px, 96vw);
-      background: rgba(12,15,20,0.92);
-      border: 1px solid var(--stroke);
-      border-radius: 16px;
-      box-shadow: 0 30px 90px rgba(0,0,0,0.65);
-      backdrop-filter: blur(12px);
-      overflow: hidden;
-      position: relative;
-      z-index: 60;
-    }
-
-    /* ====== SOFT BLUR BACKGROUND WHILE MODAL OPEN ====== */
-    .pageBlur{
-      filter: blur(0);
-      transform: translateZ(0);
-      transition: filter 0.25s ease;
-      will-change: filter;
-    }
-
-    body.modal-open .pageBlur{
-      filter: blur(6px);
-    }
-
-    body.modal-open .topoLayer{
-      opacity: 0.08;
-    }
-
-    .modalHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-      padding: 12px 14px;
-      background: rgba(20,25,34,0.55);
-      border-bottom: 1px solid var(--stroke);
-    }
-
-    .modalTitle{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight: 750;
-      letter-spacing: 0.2px;
-      font-size: 0.95rem;
-      color: var(--text);
-    }
-
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,178,0,0.10);
-      border: 1px solid rgba(255,178,0,0.18);
-      color: var(--muted);
-      font-size: 0.78rem;
-      white-space: nowrap;
-    }
-
-    .closeBtn{
-      display:inline-grid;
-      place-items:center;
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--stroke);
-      cursor:pointer;
-      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
-    }
-
-    .closeBtn:hover{
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,178,0,0.20);
-    }
-
-    .closeBtn svg{
-      width: 18px;
-      height: 18px;
-      fill: var(--text);
-      opacity: 0.9;
-    }
-
-    .modalBody{
-      padding: 12px;
-    }
-
-    .videoFrame{
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,0.35);
-    }
-
-    .videoFrame iframe{
-      position:absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-
-    .modalHint{
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 0.85rem;
-      text-align: left;
-      padding: 0 2px;
-    }
-
-    /* ====== RESPONSIVE: keep no-scroll without overload ====== */
-    @media (max-width: 980px){
-      .row{ grid-template-columns: 1fr; }
-      .pill{ min-height: auto; }
-      .wrap{ gap: 14px; }
-      .brandline span{ white-space: normal; text-align:center; }
-    }
-
-    @media (max-height: 720px){
-      .wrap{ gap: 12px; }
-      .pill{ padding: 14px; }
-      .sub{ line-height: 1.45; }
-      .footer{ display:none; }
-      .modal{ width: min(820px, 96vw); }
-      .flagshipLogo{ width: clamp(92px, 10vw, 130px); }
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      .wrap{ animation: none; opacity: 1; transform: none; }
-      .cta, .ghost, .badge, .closeBtn{ transition: none; }
-      .topoLayer{ animation: none; }
-      .pageBlur{ transition: none; }
-    }
-  </style>
-</head>
-
-<body>
-  <!-- Blur wrapper (soft blur when modal opens) -->
-  <div class="pageBlur" id="pageRoot">
-    <main class="hero" role="main" aria-label="Expedition Command Systems landing">
-      <div class="topoLayer" aria-hidden="true"></div>
-
-      <div class="wrap">
-        <!-- Flagship Logo (NOTE: filename has a space; URL-encoded here) -->
-        <div class="flagshipLogoWrap" id="flagshipLogo">
-  <img
-    class="flagshipLogo"
-    src="./ECS_Flagship_Logo_Tight_Centered.png"
-    alt="Expedition Command System flagship logo"
-    draggable="false"
-  />
-</div>
-
-        <div class="brandline" aria-label="ECS tagline">
-          <div class="dot" aria-hidden="true"></div>
-          <span>Hybrid Civilian + Agency Ready • Offline-first mission design</span>
-        </div>
-
-        <h1>Expedition Command Systems</h1>
-
-        <p class="sub">
-          Tactical-grade expedition planning, loadout configuration, and real-time mission dashboards—
-          built to bridge your build, your route, and your operational risk in one system.
-        </p>
-
-        <section class="row" aria-label="Key capabilities">
-          <div class="pill">
-            <div class="iconbox" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-4 1.4 1.4-5.4 5.4L7.6 12.4 9 11zM4 5h10v2H4V5zm0 6h4v2H4v-2zm0 6h10v2H4v-2z"/></svg>
-            </div>
-            <div>
-              <h3>Mission Planning</h3>
-              <p>Framework setup, trip parameters, readiness scoring, and deployment control—fast and structured.</p>
-            </div>
-          </div>
-
-          <div class="pill">
-            <div class="iconbox" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zM13 3v6h8V3h-8z"/></svg>
-            </div>
-            <div>
-              <h3>Live Dashboard</h3>
-              <p>Widget-based ops view for systems, attitude, consumables, alerts—built for real-time decisions.</p>
-            </div>
-          </div>
-
-          <div class="pill">
-            <div class="iconbox" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 0 1 7-7zm0 9.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5.5z"/></svg>
-            </div>
-            <div>
-              <h3>Navigation Bridge</h3>
-              <p>Imports/exports across OnX, Garmin, GPX—turn route data into fuel/water/time risk clarity.</p>
-            </div>
-          </div>
-        </section>
-
-        <div class="ctaRow" aria-label="Primary actions">
-          <a class="cta" href="#" onclick="alert('Hook this to your signup/demo flow when ready.'); return false;">
-            Explore the System
-          </a>
-
-          <button class="ghost" type="button" id="openDemo" aria-haspopup="dialog" aria-controls="demoModal">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8.6v6.8c0 .6.7 1 1.2.7l6-3.4c.5-.3.5-1 0-1.3l-6-3.4c-.5-.3-1.2.1-1.2.6zM12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/></svg>
-            Demo Video
-          </button>
-
-          <div class="storeBadges" aria-label="App store links">
-            <!-- Replace href="#" with your real store links when available -->
-            <a class="badge" href="#" aria-label="Download on the App Store" onclick="alert('Add your App Store link here when ready.'); return false;">
-              <!-- Apple icon (forced white via currentColor) -->
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M16.7 13.2c0 2.7 2.4 3.6 2.4 3.6s-1.8 5.2-4.2 5.2c-1.1 0-2-.8-3.2-.8s-2.2.8-3.2.8C3.1 22 1 16.2 1 13.1c0-3 1.8-4.6 3.6-4.6 1.1 0 2.1.8 3.2.8s1.9-.8 3.2-.8c.5 0 2.3.1 3.4 1.7-2.9 1.6-2.7 5.1-.7 6zM13.9 1.8c.7-.9 1.2-2.1 1.1-3.3-1 .1-2.2.7-2.9 1.6-.7.8-1.2 2-1 3.2 1.1.1 2.2-.6 2.8-1.5z"/>
-              </svg>
-              <span class="txt">
-                <span class="small">Download on the</span>
-                <span class="big">App Store</span>
-              </span>
-            </a>
-
-            <a class="badge" href="#" aria-label="Get it on Google Play" onclick="alert('Add your Google Play link here when ready.'); return false;">
-              <!-- Google Play icon (forced white via currentColor) -->
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3.5 2.8c-.3.3-.5.7-.5 1.2v16c0 .5.2.9.5 1.2l9.6-9.2-9.6-9.2zM14.2 12l2.6-2.5-1.7-1-2.9 2.8 2 1.9zm0 0l-2 1.9 2.9 2.8 1.7-1-2.6-2.5zm3.6-3.5L20.5 7c.7-.4 1.2-.3 1.6.1.4.4.4 1 0 1.4L18 12l-1.2-1.2zM17.8 15.5L18 12l4.1 3.5c.4.4.4 1 0 1.4-.4.4-.9.5-1.6.1l-2.7-1.5z"/>
-              </svg>
-              <span class="txt">
-                <span class="small">Get it on</span>
-                <span class="big">Google Play</span>
-              </span>
-            </a>
-          </div>
-        </div>
-
-        <div class="footer">
-          © 2026 Expedition Command Systems • Tactical-grade expedition software
-        </div>
-
-      </div>
-    </main>
-  </div>
-
-  <!-- ====== DEMO VIDEO MODAL ====== -->
-  <div class="modalOverlay" id="demoModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="ECS demo video modal">
-    <div class="modal" role="document">
-      <div class="modalHeader">
-        <div class="modalTitle">
-          Demo Video
-          <span class="chip" aria-hidden="true">Replace URL when ready</span>
-        </div>
-        <button class="closeBtn" type="button" id="closeDemo" aria-label="Close demo video">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7A1 1 0 0 0 5.7 7.1l4.9 4.9-4.9 4.9a1 1 0 1 0 1.4 1.4l4.9-4.9 4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z"/></svg>
-        </button>
-      </div>
-      <div class="modalBody">
-        <div class="videoFrame">
-          <!-- Replace with your real demo embed:
-               YouTube: https://www.youtube.com/embed/VIDEO_ID
-               Vimeo:   https://player.vimeo.com/video/VIDEO_ID -->
-          <iframe
-            id="demoIframe"
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1"
-            title="ECS Demo Video"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen>
-          </iframe>
-        </div>
-        <div class="modalHint">
-          Replace the iframe <code>src</code> with your real demo embed when ready (YouTube/Vimeo).
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    (function () {
-      const modal = document.getElementById("demoModal");
-      const openBtn = document.getElementById("openDemo");
-      const closeBtn = document.getElementById("closeDemo");
-      const iframe = document.getElementById("demoIframe");
-
-      let lastFocusEl = null;
-      const originalSrc = iframe.getAttribute("src");
-
-      function openModal() {
-        lastFocusEl = document.activeElement;
-        modal.setAttribute("aria-hidden", "false");
-        document.body.classList.add("modal-open");
-        closeBtn.focus();
-      }
-
-      function closeModal() {
-        modal.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("modal-open");
-        iframe.setAttribute("src", originalSrc); // stop playback
-        if (lastFocusEl && typeof lastFocusEl.focus === "function") lastFocusEl.focus();
-      }
-
-      openBtn.addEventListener("click", openModal);
-      closeBtn.addEventListener("click", closeModal);
-
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) closeModal();
-      });
-
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") {
-          closeModal();
-        }
-      });
-    })();
-  </script>
-<script>
-  (function () {
-    const wrap = document.getElementById("flagshipLogo");
-    const img = wrap?.querySelector(".flagshipLogo");
-    if (!wrap || !img) return;
-
-    // Respect reduced motion
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
-
-    let raf = null;
-    let target = { x: 0, y: 0 };
-
-    function apply() {
-      raf = null;
-      // subtle movement only
-      const px = (target.x * 10).toFixed(2) + "px";
-      const py = (target.y * 10).toFixed(2) + "px";
-      const ry = (target.x * 6).toFixed(2) + "deg";
-      const rx = (-target.y * 6).toFixed(2) + "deg";
-
-      img.style.setProperty("--px", px);
-      img.style.setProperty("--py", py);
-      img.style.setProperty("--rx", rx);
-      img.style.setProperty("--ry", ry);
-    }
-
-    function onMove(e) {
-      const rect = wrap.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-
-      // normalized -1..1
-      const nx = (e.clientX - cx) / (rect.width / 2);
-      const ny = (e.clientY - cy) / (rect.height / 2);
-
-      // clamp
-      target.x = Math.max(-1, Math.min(1, nx)) * 0.18;
-      target.y = Math.max(-1, Math.min(1, ny)) * 0.18;
-
-      if (!raf) raf = requestAnimationFrame(apply);
-    }
-
-    function onLeave() {
-      target.x = 0;
-      target.y = 0;
-      if (!raf) raf = requestAnimationFrame(apply);
-    }
-
-    wrap.addEventListener("mousemove", onMove);
-    wrap.addEventListener("mouseleave", onLeave);
-
-    // tiny scroll-based drift (optional but subtle)
-    window.addEventListener("scroll", () => {
-      // your page is no-scroll, but some browsers can still bounce/overscroll
-      if (!raf) raf = requestAnimationFrame(apply);
-    }, { passive: true });
-  })();
-</script>
-</body>
 </html>
-
-
-
-
