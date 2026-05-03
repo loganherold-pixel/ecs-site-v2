@@ -1,1063 +1,759 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Expedition Command System</title>
-  <meta name="description" content="ECS — Plan with Free. Operate with Pro. A command-ready expedition platform built around your vehicle." />
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Expedition Command System | Explore with Confidence</title>
+  <meta name="description" content="Expedition Command System is a tactical-grade expedition planning, navigation, dashboard, and safety platform for off-grid travel." />
+  <meta name="theme-color" content="#08090c" />
   <style>
     :root{
-      --bg0:#0B0E12;
-      --panel:#111418;
-      --panel2:#0F141A;
-      --stroke:#1E232B;
-
-      --text:#F3F4F6;
-      --muted:#9CA3AF;
-      --muted2:#6B7280;
-
-      --gold:#C6A85A;
-      --gold2:#E2C46D;
-
-      --shadow: 0 20px 60px rgba(0,0,0,.55);
-      --radius: 18px;
+      --bg:#08090c;
+      --bg-2:#0d1015;
+      --panel:#11151b;
+      --panel-2:#141922;
+      --ink:#f7f5ef;
+      --muted:#b9b5a9;
+      --dim:#767168;
+      --line:rgba(230,186,78,.25);
+      --line-soft:rgba(255,255,255,.08);
+      --gold:#c8a24a;
+      --gold-2:#f2d479;
+      --gold-3:#8a6b25;
+      --danger:#f35e48;
+      --ok:#70d572;
+      --radius:22px;
+      --shadow:0 28px 90px rgba(0,0,0,.55);
+      --max:1520px;
     }
 
-    /* Hard no-scroll rule */
-    html, body { height: 100%; }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg)}
     body{
       margin:0;
-      background: var(--bg0);
-      color:var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      overflow:hidden;
-    }
-
-    /* Subtle background photo layer (cinematic fade) */
-    .bgPhoto{
-      position: fixed;
-      inset: 0;
-      background-image: url("background-image.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      opacity: 0.14;              /* subtle */
-      transform: scale(1.02);
-      filter: saturate(.9) contrast(1.02);
-      pointer-events: none;
-      z-index: 0;
-    }
-    /* Tone + vignette + gentle fade so it never looks messy */
-    .bgPhoto::after{
-      content:"";
-      position:absolute;
-      inset:0;
+      min-height:100%;
+      color:var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background:
-        radial-gradient(1200px 720px at 60% 10%, rgba(198,168,90,.10), transparent 58%),
-        radial-gradient(900px 620px at 15% 45%, rgba(198,168,90,.06), transparent 62%),
-        radial-gradient(900px 650px at 50% 110%, rgba(0,0,0,.55), transparent 55%),
-        linear-gradient(180deg, rgba(11,14,18,.88), rgba(11,14,18,.94));
+        radial-gradient(1200px 700px at 72% 5%, rgba(221,159,30,.16), transparent 62%),
+        radial-gradient(900px 640px at 20% 16%, rgba(221,159,30,.10), transparent 60%),
+        linear-gradient(180deg, #050609 0%, #0a0c10 50%, #050609 100%);
+      overflow-x:hidden;
     }
 
-    /* Topographic overlay */
-    .topoLayer{
+    body::before{
+      content:"";
       position:fixed;
       inset:0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.66)),
+        url("assets/ecs-particle-texture.png") center/cover no-repeat;
+      opacity:.42;
       pointer-events:none;
-      opacity:.06;
-      background-image:
-        repeating-radial-gradient(circle at 30% 30%, rgba(255,255,255,.10) 0 1px, transparent 1px 22px),
-        repeating-radial-gradient(circle at 70% 20%, rgba(255,255,255,.08) 0 1px, transparent 1px 28px),
-        repeating-radial-gradient(circle at 50% 70%, rgba(255,255,255,.06) 0 1px, transparent 1px 32px);
-      mix-blend-mode: overlay;
-      filter: blur(.2px);
-      animation: topoDrift 18s ease-in-out infinite;
-      z-index: 1;
+      z-index:-3;
     }
+
+    body::after{
+      content:"";
+      position:fixed;
+      inset:-20%;
+      background:
+        repeating-radial-gradient(circle at 20% 20%, rgba(238,191,72,.18) 0 1px, transparent 1px 26px),
+        repeating-radial-gradient(circle at 80% 14%, rgba(238,191,72,.12) 0 1px, transparent 1px 34px),
+        repeating-radial-gradient(circle at 44% 76%, rgba(238,191,72,.10) 0 1px, transparent 1px 42px);
+      opacity:.10;
+      mix-blend-mode:screen;
+      pointer-events:none;
+      z-index:-2;
+      animation: topoDrift 24s ease-in-out infinite alternate;
+    }
+
     @keyframes topoDrift{
-      0%,100%{ transform: translate3d(0,0,0) scale(1.02); }
-      50%{ transform: translate3d(-28px, -14px, 0) scale(1.02); }
+      from{transform:translate3d(0,0,0) scale(1.02)}
+      to{transform:translate3d(-40px,-18px,0) scale(1.04)}
     }
 
-    /* ====== SHELL / HEADER ====== */
-    .page{
-      height:100%;
+    a{color:inherit;text-decoration:none}
+    button, a{ -webkit-tap-highlight-color: transparent; }
+
+    .site-shell{
+      width:min(var(--max), calc(100vw - 56px));
+      margin-inline:auto;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:50;
+      padding:16px 0 10px;
+      backdrop-filter: blur(18px);
+    }
+
+    .nav{
       display:grid;
-      grid-template-rows: auto 1fr;
-      position: relative;
-      z-index: 2; /* above background */
-    }
-
-    header{
-      display:flex;
+      grid-template-columns: minmax(260px, 1fr) auto minmax(260px, 1fr);
       align-items:center;
-      justify-content:space-between; /* ensures right-side items stay right */
-      padding: clamp(14px, 2.2vh, 22px) clamp(16px, 3vw, 40px);
-      border-bottom:1px solid rgba(198,168,90,.14);
-      background: linear-gradient(to bottom, rgba(15,20,26,.72), rgba(15,20,26,.25));
-      backdrop-filter: blur(8px);
-      position:relative;
-      z-index:3;
-      gap: 14px;
+      gap:22px;
+      min-height:70px;
+      padding:10px 18px;
+      border:1px solid rgba(255,255,255,.09);
+      border-radius:24px;
+      background:linear-gradient(180deg, rgba(11,13,17,.88), rgba(10,11,15,.66));
+      box-shadow:0 18px 50px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05);
     }
 
     .brand{
       display:flex;
       align-items:center;
-      gap:12px;
-      min-width: 240px;
-      flex: 0 0 auto;
+      gap:14px;
+      min-width:0;
     }
-
-    /* Top-left small app icon container now actually shows your app icon image */
-    .brandMark{
-      width:34px; height:34px;
-      border-radius: 10px;
-      border: 1px solid rgba(198,168,90,.40);
-      background:
-        radial-gradient(circle at 30% 25%, rgba(226,196,109,.35), transparent 55%),
-        linear-gradient(180deg, rgba(17,20,24,.9), rgba(11,14,18,.95));
-      box-shadow: 0 10px 26px rgba(0,0,0,.35);
-      position:relative;
-      overflow:hidden;
-      display:grid;
-      place-items:center;
+    .brand img{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      object-fit:contain;
+      filter:drop-shadow(0 0 18px rgba(211,151,35,.22));
     }
-    .brandMark img{
-      width: 86%;
-      height: 86%;
-      object-fit: contain;
+    .brand-wordmark{line-height:1.05;min-width:0}
+    .brand-wordmark strong{
       display:block;
-      filter:
-        drop-shadow(0 8px 18px rgba(0,0,0,.35))
-        drop-shadow(0 0 10px rgba(255,178,0,.10));
-      user-select:none;
-      -webkit-user-drag:none;
+      font-size:22px;
+      letter-spacing:.10em;
+      color:var(--gold-2);
+      text-transform:uppercase;
     }
-    .brandMark::after{
+    .brand-wordmark span{
+      display:block;
+      font-size:14px;
+      letter-spacing:.22em;
+      color:#f2f0e9;
+      text-transform:uppercase;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:32px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-size:12px;
+      color:rgba(247,245,239,.82);
+    }
+    .nav-links a{
+      position:relative;
+      padding:10px 0;
+      transition:color .18s ease;
+    }
+    .nav-links a::after{
       content:"";
-      position:absolute; inset:-40%;
-      background: linear-gradient(120deg, transparent 35%, rgba(226,196,109,.22) 50%, transparent 65%);
-      transform: translateX(-30%);
-      animation: shine 6.5s ease-in-out infinite;
-      pointer-events:none;
+      position:absolute;
+      left:50%;
+      bottom:3px;
+      width:0;
+      height:1px;
+      background:linear-gradient(90deg, transparent, var(--gold-2), transparent);
+      transform:translateX(-50%);
+      transition:width .18s ease;
     }
-    @keyframes shine{
-      0%,70%,100%{ transform: translateX(-45%); opacity: .0;}
-      78%{ opacity:.55;}
-      90%{ transform: translateX(55%); opacity:.0;}
-    }
+    .nav-links a:hover{color:var(--gold-2)}
+    .nav-links a:hover::after{width:100%}
 
-    .brandText{ display:flex; flex-direction:column; line-height:1.1; }
-    .brandText .kicker{
-      font-size: 11px;
-      letter-spacing: .20em;
-      text-transform: uppercase;
-      color: rgba(198,168,90,.85);
-    }
-    .brandText .name{
-      font-size: 15px;
-      font-weight: 650;
-      color: var(--text);
-      opacity: .96;
-    }
-
-    .navActions{
+    .nav-actions{
       display:flex;
+      justify-content:flex-end;
       align-items:center;
-      justify-content:flex-end; /* keep right aligned */
-      gap:10px;
-      flex: 1 1 auto;
-      min-width: 260px;
+      gap:12px;
     }
 
-    .chip{
-      font-size: 12px;
-      color: var(--muted);
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(17,20,24,.55);
-      padding: 8px 10px;
-      border-radius: 999px;
-      display:flex;
+    .motto-pill{
+      display:inline-flex;
       align-items:center;
-      gap:8px;
-      white-space: nowrap;
-    }
-    .chip .dot{
-      width:6px; height:6px; border-radius:999px;
-      background: rgba(198,168,90,.9);
-      box-shadow: 0 0 0 4px rgba(198,168,90,.16);
+      gap:9px;
+      min-height:44px;
+      padding:0 18px;
+      border:1px solid rgba(235,192,86,.28);
+      border-radius:12px;
+      color:var(--gold-2);
+      background:rgba(208,160,47,.07);
+      font-size:13px;
+      font-weight:700;
+      white-space:nowrap;
     }
 
     .btn{
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 650;
-      font-size: 13px;
-      border: 1px solid rgba(198,168,90,.45);
-      color: var(--text);
-      background: rgba(17,20,24,.65);
-      cursor:pointer;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
-      white-space: nowrap;
-    }
-    .btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(226,196,109,.75);
-      box-shadow: 0 14px 34px rgba(0,0,0,.35);
-    }
-    .btnPrimary{
-      background: linear-gradient(180deg, rgba(198,168,90,.22), rgba(198,168,90,.08));
-      border-color: rgba(226,196,109,.80);
-      position:relative;
-      overflow:hidden;
-    }
-    .btnPrimary::before{
-      content:"";
-      position:absolute; left:10px; right:10px; top:7px; height:1px;
-      background: linear-gradient(to right, transparent, rgba(255,255,255,.20), transparent);
-      opacity:.55;
-      pointer-events:none;
-    }
-    .btnPrimary:hover{
-      background: rgba(198,168,90,.95);
-      color:#0B0E12;
-    }
-
-    /* ====== MAIN LAYOUT (no scroll) ====== */
-    main{
-      height:100%;
-      padding: clamp(14px, 2.2vh, 22px) clamp(16px, 3vw, 40px);
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: clamp(14px, 2.2vh, 22px);
-      align-items: stretch;
-      min-height: 0;
-      position:relative;
-      z-index:2;
-    }
-
-    /* Left panel (flagship hero) */
-    .heroPanel{
-      background: linear-gradient(180deg, rgba(17,20,24,.78), rgba(11,14,18,.86));
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: clamp(18px, 3.2vh, 30px);
-      display:grid;
-      grid-template-rows: auto auto auto 1fr auto;
-      gap: 14px;
-      min-height: 0;
-      position:relative;
-      overflow:hidden;
-    }
-    .heroPanel::before{
-      content:"";
-      position:absolute;
-      inset:-1px;
-      border-radius: var(--radius);
-      padding:1px;
-      background: linear-gradient(140deg, rgba(198,168,90,.35), rgba(255,255,255,.08), rgba(198,168,90,.08));
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events:none;
-      opacity:.55;
-    }
-
-    .brandline{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 14px;
-      border-radius: 999px;
-      background: rgba(10,13,18,0.45);
-      border: 1px solid rgba(255,255,255,.08);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-      backdrop-filter: blur(10px);
-      width: fit-content;
-      position:relative;
-      z-index:1;
-    }
-    .brandline .dot{
-      width:10px; height:10px; border-radius:50%;
-      background: var(--gold2);
-      box-shadow: 0 0 18px rgba(255,178,0,0.35);
-    }
-    .brandline span{
-      color: var(--muted);
-      font-size: 0.92rem;
-      letter-spacing: 0.4px;
-      white-space: nowrap;
-    }
-
-    /* Flagship logo: glow + shine + hover pulse + parallax */
-    .flagshipLogoWrap{
-      position: relative;
-      display: inline-grid;
-      place-items: center;
-      border-radius: 22px;
-      width: fit-content;
-      z-index:1;
-    }
-    .flagshipLogo{
-      width: clamp(180px, 18vw, 260px);
-      height: auto;
-      user-select: none;
-      -webkit-user-drag: none;
-      transform: translate3d(var(--px,0px), var(--py,0px), 0) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
-      transition: transform 220ms ease, filter 220ms ease;
-      filter:
-        drop-shadow(0 18px 44px rgba(0,0,0,0.55))
-        drop-shadow(0 0 18px rgba(255,178,0,0.14))
-        drop-shadow(0 0 36px rgba(255,178,0,0.08));
-    }
-    .flagshipLogoWrap::before{
-      content:"";
-      position:absolute;
-      inset: -10%;
-      border-radius: 28px;
-      background: radial-gradient(circle at 50% 45%, rgba(255,178,0,0.18) 0%, rgba(255,178,0,0.0) 62%);
-      opacity: 0.55;
-      filter: blur(16px);
-      pointer-events:none;
-      animation: amberBreath 5.2s ease-in-out infinite;
-    }
-    .flagshipLogoWrap::after{
-      content:"";
-      position:absolute;
-      inset: -12%;
-      border-radius: 28px;
-      pointer-events:none;
-      background: linear-gradient(
-        110deg,
-        rgba(255,255,255,0.00) 0%,
-        rgba(255,255,255,0.00) 42%,
-        rgba(255,214,120,0.10) 50%,
-        rgba(255,255,255,0.00) 58%,
-        rgba(255,255,255,0.00) 100%
-      );
-      transform: translateX(-140%) skewX(-14deg);
-      opacity: 0;
-      mix-blend-mode: screen;
-      filter: blur(0.4px);
-      animation: shineSweep 9.5s ease-in-out infinite;
-    }
-    .flagshipLogoWrap:hover .flagshipLogo{
-      transform:
-        translate3d(var(--px,0px), var(--py,0px), 0)
-        rotateX(var(--rx,0deg))
-        rotateY(var(--ry,0deg))
-        scale(1.03);
-      filter:
-        drop-shadow(0 18px 44px rgba(0,0,0,0.55))
-        drop-shadow(0 0 22px rgba(255,178,0,0.20))
-        drop-shadow(0 0 46px rgba(255,178,0,0.12));
-    }
-    .flagshipLogoWrap:hover::before{ opacity: 0.75; }
-
-    @keyframes amberBreath{
-      0%, 100% { opacity: 0.45; transform: scale(0.98); }
-      50%      { opacity: 0.62; transform: scale(1.02); }
-    }
-    @keyframes shineSweep{
-      0%   { opacity: 0; transform: translateX(-140%) skewX(-14deg); }
-      55%  { opacity: 0; transform: translateX(-140%) skewX(-14deg); }
-      62%  { opacity: 0.55; }
-      70%  { opacity: 0.30; transform: translateX(140%) skewX(-14deg); }
-      72%  { opacity: 0; transform: translateX(140%) skewX(-14deg); }
-      100% { opacity: 0; transform: translateX(140%) skewX(-14deg); }
-    }
-
-    h1{
-      margin:0;
-      font-size: clamp(2.05rem, 3.0vw, 3.2rem);
-      font-weight: 820;
-      letter-spacing: -0.02em;
-      text-shadow: 0 12px 40px rgba(0,0,0,0.55);
-      position:relative;
-      z-index:1;
-    }
-    .sub{
-      color: var(--muted);
-      max-width: 70ch;
-      font-size: clamp(0.98rem, 1.15vw, 1.12rem);
-      line-height: 1.6;
-      margin: 0;
-      position:relative;
-      z-index:1;
-    }
-
-    .row{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      align-content:start;
-      min-height: 0;
-      position:relative;
-      z-index:1;
-    }
-    .pill{
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 14px;
-      padding: 14px 14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-      backdrop-filter: blur(10px);
-      text-align:left;
-      min-height: 92px;
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-    }
-    .iconbox{
-      width: 34px; height: 34px;
-      border-radius: 10px;
-      background: rgba(198,168,90,0.12);
-      border: 1px solid rgba(198,168,90,0.22);
-      display:grid;
-      place-items:center;
-      flex: 0 0 auto;
-      color: var(--gold2);
-    }
-    .iconbox svg{ width: 18px; height: 18px; fill: currentColor; opacity: .95; }
-    .pill h3{
-      font-size: 0.98rem;
-      margin: 0 0 4px;
-      color: var(--text);
-      letter-spacing: 0.2px;
-    }
-    .pill p{
-      margin:0;
-      font-size: 0.9rem;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .actions{
-      display:flex;
-      align-items:center;
-      gap: 12px;
-      flex-wrap: wrap;
-      position:relative;
-      z-index:1;
-    }
-    .cta{
       display:inline-flex;
       align-items:center;
       justify-content:center;
       gap:10px;
-      padding: 13px 18px;
-      border-radius: 999px;
-      background: rgba(198,168,90,.95);
-      color:#0B0E12;
-      font-weight:750;
-      letter-spacing:0.2px;
-      border: 0;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-      box-shadow: 0 10px 25px rgba(255,178,0,0.20);
-      text-decoration:none;
-      min-width: 220px;
-    }
-    .cta:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 14px 34px rgba(255,178,0,0.28);
-      opacity: 0.96;
-    }
-
-    .storeBadges{
-      display:flex;
-      gap: 10px;
-      align-items:center;
-      flex-wrap: wrap;
-      padding: 8px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.02);
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.10);
-      color: #ffffff;
-      text-decoration:none;
-      backdrop-filter: blur(10px);
-      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-      height: 44px;
-    }
-    .badge:hover{
-      transform: translateY(-2px);
-      border-color: rgba(226,196,109,.35);
-      background: rgba(198,168,90,.06);
-    }
-    .badge .txt{ display:flex; flex-direction:column; line-height: 1.05; text-align:left; }
-    .badge .small{ font-size: 0.68rem; color: var(--muted2); letter-spacing: 0.3px; }
-    .badge .big{ font-size: 0.88rem; font-weight: 750; letter-spacing: 0.2px; white-space: nowrap; }
-    .badge svg{ width: 20px; height: 20px; flex: 0 0 auto; fill: currentColor; opacity: 1; }
-    .badge svg *{ fill: currentColor !important; opacity: 1 !important; }
-
-    /* ====== RIGHT PANEL: PRICING ====== */
-    .pricingPanel{
-      background: linear-gradient(180deg, rgba(17,20,24,.82), rgba(11,14,18,.92));
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: clamp(18px, 3.2vh, 26px);
-      display:grid;
-      grid-template-rows: auto auto auto 1fr auto; /* last auto is CTA area */
-      gap: 12px;
-      min-height: 0;
-      position:relative;
-      overflow:hidden;
-    }
-    .pricingPanel::after{
-      content:"";
-      position:absolute;
-      inset:-60% -40% auto auto;
-      width: 520px; height: 520px;
-      background: radial-gradient(circle at 30% 30%, rgba(226,196,109,.16), transparent 60%);
-      filter: blur(2px);
-      transform: rotate(18deg);
-      pointer-events:none;
-      opacity:.7;
-    }
-
-    .priceTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap: 12px;
-      position:relative;
-      z-index:1;
-    }
-    .planTitle{ display:flex; flex-direction:column; gap: 6px; }
-    .planTitle .k{
-      font-size: 11px;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: rgba(198,168,90,.90);
-    }
-    .planTitle .t{
-      font-size: 22px;
-      font-weight: 850;
-      margin:0;
-    }
-    .planTitle .p{
-      color: var(--muted);
-      font-size: 13px;
-      margin:0;
-      line-height:1.35;
-    }
-    .planTitle .p strong{
-      color: rgba(198,168,90,.92);
-      font-weight: 750;
-    }
-
-    .priceTag{
-      text-align:right;
+      min-height:44px;
+      padding:0 22px;
+      border-radius:12px;
+      border:1px solid rgba(232,190,86,.35);
+      background:rgba(255,255,255,.035);
+      color:var(--ink);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+      cursor:pointer;
       white-space:nowrap;
     }
-    .priceTag .amt{
-      font-size: 34px;
-      font-weight: 920;
-      letter-spacing: -0.02em;
-      line-height: 1.0;
+    .btn:hover{transform:translateY(-2px);border-color:rgba(242,212,121,.78);box-shadow:0 16px 38px rgba(0,0,0,.32)}
+    .btn-gold{
+      color:#0b0a07;
+      border-color:rgba(255,224,131,.75);
+      background:linear-gradient(180deg, #ffe090 0%, #c59b38 100%);
+      box-shadow:0 14px 34px rgba(197,139,34,.22), inset 0 1px 0 rgba(255,255,255,.45);
     }
-    .priceTag .per{
-      color: rgba(198,168,90,.9);
-      font-size: 11px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      margin-top: 0px;
-      opacity: .95;
-    }
+    .btn-gold:hover{box-shadow:0 18px 50px rgba(197,139,34,.32), inset 0 1px 0 rgba(255,255,255,.48)}
+    .btn-wide{width:100%;}
 
-    .compare{
+    .hero{
       position:relative;
-      z-index:1;
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      min-height: 0;
-    }
-    .card{
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 16px;
-      padding: 14px;
-      min-height: 0;
-      display:grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 10px;
-    }
-    .card.pro{
-      border-color: rgba(226,196,109,.55);
-      box-shadow: 0 0 0 1px rgba(198,168,90,.12), 0 20px 50px rgba(0,0,0,.35);
-    }
-
-    .cardHead{
-      display:flex;
-      justify-content:space-between;
-      align-items:baseline;
-      gap: 10px;
-    }
-    .cardHead .name{ font-weight: 850; font-size: 15px; }
-    .cardHead .tag{
-      font-size: 10px;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: var(--muted2);
-    }
-    .card.pro .cardHead .tag{ color: rgba(198,168,90,.92); }
-
-    .feat{
-      list-style:none;
-      padding:0;
-      margin:0;
-      display:grid;
-      gap: 9px;
-      align-content:start;
-    }
-    .feat li{
-      display:flex;
-      gap: 10px;
-      align-items:flex-start;
-      font-size: 12.8px;
-      color: var(--muted);
-      line-height: 1.35;
-    }
-    .card.pro .feat li{ color: rgba(243,244,246,.82); }
-
-    .check{
-      width: 16px;
-      height: 16px;
-      border-radius: 6px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.02);
-      flex: 0 0 auto;
-      margin-top: 1px;
-      display:grid;
-      place-items:center;
-    }
-    .pro .check{
-      border-color: rgba(226,196,109,.55);
-      background: rgba(198,168,90,.10);
-    }
-    .check svg{ width: 12px; height: 12px; opacity:.9; }
-    .pro .check svg{ opacity: 1; }
-
-    .mutedNote{
-      margin-top: 6px;
-      color: var(--muted2);
-      font-size: 12px;
-    }
-
-    .proStrip{
-      position:relative;
-      z-index:1;
-      border-radius: 16px;
-      border: 1px solid rgba(226,196,109,.20);
-      background: rgba(198,168,90,.05);
-      padding: 12px 12px;
-      display:grid;
-      grid-template-columns: auto 1fr;
-      gap: 10px;
-      align-items:start;
-    }
-    .proStrip .label{
-      font-size: 10px;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: rgba(198,168,90,.92);
-      padding-top: 2px;
-      white-space: nowrap;
-    }
-    .proStrip ul{
-      list-style:none;
-      margin:0;
-      padding:0;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 12px;
-    }
-    .proStrip li{
-      display:flex;
-      align-items:flex-start;
-      gap: 8px;
-      font-size: 12.5px;
-      color: rgba(243,244,246,.84);
-      line-height: 1.3;
-    }
-    .proDot{
-      width: 8px; height: 8px;
-      margin-top: 4px;
-      border-radius: 999px;
-      background: rgba(226,196,109,.95);
-      box-shadow: 0 0 0 4px rgba(198,168,90,.14);
-      flex: 0 0 auto;
-    }
-
-    /* Pricing bottom area: removes the “void” by intentionally filling it */
-    .ctaBox{
-      position:relative;
-      z-index:1;
-      display:grid;
-      gap: 10px;
-      align-content:end;
-      padding-top: 2px;
-    }
-    .ctaRow{
-      display:flex;
-      gap: 10px;
+      grid-template-columns: minmax(520px, .98fr) minmax(480px, 1.02fr);
+      gap:30px;
+      min-height:520px;
+      padding:74px 0 34px;
       align-items:center;
-      flex-wrap: wrap;
     }
-    .btnWide{
-      flex: 1 1 220px;
-      padding: 14px 16px;
-      font-size: 14px;
-    }
-    .btnGhost{
-      border-color: rgba(255,255,255,.10);
-      color: rgba(156,163,175,.90);
-      background: rgba(255,255,255,.03);
-    }
-    .btnGhost:hover{
-      border-color: rgba(255,255,255,.16);
-      background: rgba(255,255,255,.04);
-      box-shadow:none;
-    }
-    .fine{
-      font-size: 11px;
-      color: var(--muted2);
-      line-height: 1.35;
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:44px -22px 0;
+      background:
+        radial-gradient(800px 380px at 80% 35%, rgba(236,171,35,.22), transparent 66%),
+        linear-gradient(90deg, rgba(8,9,12,.72) 0%, rgba(8,9,12,.35) 55%, rgba(8,9,12,.68) 100%);
+      border-radius:28px;
+      border:1px solid rgba(255,255,255,.06);
+      pointer-events:none;
     }
 
-    /* ====== RESPONSIVE: keep no-scroll without overload ====== */
-    @media (max-width: 1060px){
-      main{ grid-template-columns: 1fr; }
-      .row{ grid-template-columns: 1fr; }
-      .compare{ grid-template-columns: 1fr; }
-      .proStrip ul{ grid-template-columns: 1fr; }
-      .navActions{ justify-content:flex-start; }
-      header{ flex-wrap: wrap; }
+    .hero-copy{position:relative;z-index:1;}
+    .eyebrow{
+      display:flex;
+      align-items:center;
+      gap:13px;
+      color:var(--gold-2);
+      text-transform:uppercase;
+      letter-spacing:.22em;
+      font-size:12px;
+      font-weight:850;
+      margin-bottom:18px;
+    }
+    .eyebrow::before,.eyebrow::after{
+      content:"";
+      width:50px;
+      height:1px;
+      background:linear-gradient(90deg, transparent, var(--gold-2));
+      opacity:.85;
+    }
+    .eyebrow::after{background:linear-gradient(90deg, var(--gold-2), transparent)}
+
+    h1{
+      margin:0;
+      font-size:clamp(58px, 7.8vw, 112px);
+      line-height:.86;
+      letter-spacing:-.055em;
+      text-transform:uppercase;
+      font-weight:950;
+    }
+    .metal{
+      display:block;
+      background:linear-gradient(180deg, #fff 0%, #f2f3f4 38%, #8e9297 56%, #fff 74%, #d7d9dc 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      text-shadow:0 16px 42px rgba(0,0,0,.52);
+    }
+    .gold-title{
+      display:block;
+      margin-top:12px;
+      color:var(--gold-2);
+      font-size:.34em;
+      letter-spacing:.26em;
+      line-height:1.05;
+      text-shadow:0 0 26px rgba(221,151,24,.22);
+    }
+    .hero-subtitle{
+      margin:28px 0 0;
+      max-width:720px;
+      color:#f6f0df;
+      font-size:19px;
+      line-height:1.65;
+      font-weight:650;
+    }
+    .hero-subtitle span{display:block;color:rgba(247,245,239,.72);font-weight:500;}
+
+    .signal-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:22px;
+      margin:28px 0 0;
+    }
+    .signal{
+      display:grid;
+      grid-template-columns:36px auto;
+      align-items:center;
+      gap:11px;
+      min-width:178px;
+    }
+    .signal-icon{
+      width:36px;height:36px;border-radius:50%;
+      display:grid;place-items:center;
+      color:var(--gold-2);
+      border:1px solid rgba(235,192,86,.28);
+      background:rgba(214,164,45,.08);
+      box-shadow:0 0 0 5px rgba(214,164,45,.035);
+    }
+    .signal strong{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:#fff}
+    .signal span{display:block;margin-top:2px;font-size:12px;color:rgba(247,245,239,.58)}
+
+    .hero-buttons{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px;}
+
+    .hero-art{
+      position:relative;
+      z-index:1;
+      min-height:430px;
+      border-radius:28px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.07);
+      background:
+        radial-gradient(420px 300px at 58% 40%, rgba(239,184,55,.28), transparent 70%),
+        linear-gradient(180deg, rgba(20,23,28,.10), rgba(7,8,10,.45));
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .hero-art::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(0,0,0,.15) 52%, rgba(0,0,0,.78) 100%),
+        radial-gradient(circle at 18% 18%, rgba(242,212,121,.30) 0 1px, transparent 2px),
+        radial-gradient(circle at 42% 10%, rgba(242,212,121,.30) 0 1px, transparent 2px),
+        radial-gradient(circle at 82% 26%, rgba(242,212,121,.35) 0 1px, transparent 2px),
+        radial-gradient(circle at 66% 64%, rgba(242,212,121,.30) 0 1px, transparent 2px);
+      background-size:auto, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+      opacity:.9;
+    }
+    .hero-art::after{
+      content:"";
+      position:absolute;
+      inset:-30% -20%;
+      background:
+        repeating-radial-gradient(circle at 60% 42%, rgba(239,184,55,.34) 0 1px, transparent 1px 26px),
+        repeating-radial-gradient(circle at 55% 52%, rgba(239,184,55,.22) 0 1px, transparent 1px 34px);
+      opacity:.23;
+      mix-blend-mode:screen;
+    }
+    .hero-badge{
+      position:absolute;
+      right:42px;
+      top:50px;
+      width:160px;
+      z-index:4;
+      display:grid;
+      justify-items:center;
+      gap:12px;
+      text-align:center;
+    }
+    .hero-badge img{
+      width:126px;
+      max-height:126px;
+      object-fit:contain;
+      filter:drop-shadow(0 18px 38px rgba(0,0,0,.62)) drop-shadow(0 0 22px rgba(227,162,35,.24));
+    }
+    .hero-badge span{
+      color:var(--gold-2);
+      text-transform:uppercase;
+      letter-spacing:.25em;
+      font-size:12px;
+      font-weight:850;
+      text-shadow:0 0 20px rgba(226,164,38,.36);
+    }
+    .mountain-svg{
+      position:absolute;
+      inset:auto 0 82px 0;
+      width:100%;
+      height:230px;
+      z-index:2;
+      opacity:.88;
+      filter:drop-shadow(0 20px 42px rgba(0,0,0,.6));
+    }
+    .vehicle-svg{
+      position:absolute;
+      right:120px;
+      bottom:70px;
+      width:min(360px, 44vw);
+      z-index:5;
+      filter:drop-shadow(0 34px 45px rgba(0,0,0,.72));
+    }
+    .rock-line{
+      position:absolute;
+      left:-8%;right:-8%;bottom:0;height:120px;
+      z-index:4;
+      background:
+        radial-gradient(100px 40px at 12% 50%, rgba(255,255,255,.08), transparent 70%),
+        radial-gradient(120px 50px at 82% 44%, rgba(255,255,255,.08), transparent 70%),
+        linear-gradient(170deg, transparent 0 28%, #17120b 29% 55%, #050506 56% 100%);
+      border-top:1px solid rgba(242,212,121,.18);
     }
 
-    /* Short viewports: protect no-scroll */
-    @media (max-height: 760px){
-      .proStrip{ display:none; }
-      .pill:nth-child(3){ display:none; }
+    .pillars{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+      margin:10px 0 18px;
     }
-    @media (max-height: 680px){
-      .sub{ display:none; }
-      .feat li:nth-child(n+6){ display:none; }
+    .pillar-card{
+      position:relative;
+      min-height:330px;
+      display:grid;
+      grid-template-rows:auto auto auto 1fr;
+      gap:10px;
+      padding:22px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(20,24,31,.92), rgba(12,14,18,.92));
+      border:1px solid rgba(235,192,86,.24);
+      overflow:hidden;
+      box-shadow:0 22px 66px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.04);
     }
+    .pillar-card::before{
+      content:"";
+      position:absolute;inset:0;
+      background:radial-gradient(240px 180px at 80% 0%, rgba(238,184,55,.12), transparent 70%);
+      pointer-events:none;
+    }
+    .pillar-top{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      position:relative;
+      z-index:1;
+    }
+    .number{
+      width:38px;height:38px;border-radius:50%;
+      display:grid;place-items:center;
+      border:2px solid rgba(242,212,121,.75);
+      color:var(--gold-2);
+      font-size:18px;
+      font-weight:900;
+    }
+    .pillar-card h2{
+      margin:0;
+      color:var(--gold-2);
+      text-transform:uppercase;
+      letter-spacing:.22em;
+      font-size:18px;
+    }
+    .pillar-card h3{margin:0;color:#fff;font-size:14px;position:relative;z-index:1;}
+    .pillar-card p{margin:0;color:rgba(247,245,239,.66);font-size:13px;line-height:1.5;position:relative;z-index:1;}
+    .checks{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:7px;position:relative;z-index:1;}
+    .checks li{display:flex;gap:8px;color:rgba(247,245,239,.77);font-size:12.5px;line-height:1.35;}
+    .checks li::before{content:"✓";display:grid;place-items:center;width:16px;height:16px;border-radius:50%;border:1px solid rgba(242,212,121,.55);color:var(--gold-2);font-size:10px;flex:0 0 auto;margin-top:1px;}
 
-    /* Reduced motion */
+    .mini-visual{
+      position:relative;
+      min-height:126px;
+      margin-top:10px;
+      border-radius:15px;
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.46));
+      overflow:hidden;
+      z-index:1;
+    }
+    .map-visual{
+      background:
+        radial-gradient(circle at 22% 38%, rgba(242,212,121,.7) 0 3px, transparent 4px),
+        radial-gradient(circle at 48% 55%, rgba(242,212,121,.75) 0 3px, transparent 4px),
+        radial-gradient(circle at 72% 24%, rgba(242,212,121,.75) 0 3px, transparent 4px),
+        linear-gradient(120deg, transparent 0 47%, rgba(255,137,28,.9) 48% 50%, transparent 51% 100%),
+        repeating-linear-gradient(23deg, rgba(242,212,121,.12) 0 1px, transparent 1px 24px),
+        linear-gradient(135deg, #1f251e, #101114 66%, #08090b);
+    }
+    .dashboard-visual{
+      display:grid;
+      grid-template-columns:.35fr 1fr .58fr;
+      gap:8px;
+      padding:12px;
+    }
+    .dash-gauge,.dash-map,.dash-list{border-radius:11px;background:rgba(8,9,12,.62);border:1px solid rgba(255,255,255,.08)}
+    .dash-gauge{display:grid;place-items:center;color:var(--gold-2);font-size:22px;font-weight:900;}
+    .dash-gauge span{font-size:10px;color:var(--muted);display:block;text-align:center;margin-top:2px;font-weight:600;}
+    .dash-map{position:relative;overflow:hidden;background:linear-gradient(135deg,#1f2d24,#10161a)}
+    .dash-map::before{content:"";position:absolute;inset:0;background:linear-gradient(130deg, transparent 40%, #e69220 43% 46%, transparent 48%)}
+    .dash-list{padding:8px;display:grid;gap:6px}.dash-list i{display:block;height:8px;border-radius:999px;background:rgba(242,212,121,.22)}
+    .camp-visual{background:linear-gradient(180deg, rgba(70,80,62,.2), rgba(0,0,0,.55)), radial-gradient(180px 90px at 65% 34%, rgba(242,212,121,.26), transparent 66%), linear-gradient(135deg,#23301e,#08090b)}
+    .camp-visual::before{content:"";position:absolute;left:28px;bottom:30px;width:0;height:0;border-left:36px solid transparent;border-right:36px solid transparent;border-bottom:66px solid rgba(222,190,118,.82);filter:drop-shadow(0 12px 20px rgba(0,0,0,.5));}
+    .camp-card{position:absolute;right:12px;bottom:12px;padding:9px 11px;border-radius:10px;background:rgba(8,9,12,.74);border:1px solid rgba(255,255,255,.10);font-size:11px;color:var(--muted)}
+    .camp-card strong{display:block;color:#fff;margin-bottom:2px}
+    .sos-visual{background:radial-gradient(circle at 50% 50%, rgba(243,94,72,.2), transparent 7%, rgba(242,212,121,.12) 8%, transparent 9%, transparent 19%, rgba(242,212,121,.12) 20%, transparent 21%, transparent 32%, rgba(242,212,121,.12) 33%, transparent 34%), linear-gradient(135deg,#15120f,#08090b)}
+    .sos-dot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--danger);color:#fff;font-size:11px;font-weight:900;box-shadow:0 0 0 9px rgba(243,94,72,.16)}
+
+    .tools-pricing{
+      display:grid;
+      grid-template-columns:minmax(0,1.42fr) minmax(360px,.88fr);
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .section-panel{
+      border-radius:20px;
+      border:1px solid rgba(235,192,86,.20);
+      background:linear-gradient(180deg, rgba(19,23,29,.84), rgba(11,13,17,.90));
+      box-shadow:0 22px 72px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.04);
+      overflow:hidden;
+    }
+    .tools-panel{padding:24px 26px 0;}
+    .section-title{
+      margin:0 0 6px;
+      color:var(--gold-2);
+      text-transform:uppercase;
+      letter-spacing:.22em;
+      font-size:16px;
+    }
+    .section-copy{margin:0;color:rgba(247,245,239,.68);font-size:14px;line-height:1.5;}
+    .devices{
+      position:relative;
+      display:grid;
+      grid-template-columns:180px 1fr 150px 142px;
+      gap:18px;
+      align-items:end;
+      min-height:244px;
+      margin-top:20px;
+    }
+    .device{
+      position:relative;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:24px;
+      background:#07080b;
+      box-shadow:0 18px 60px rgba(0,0,0,.46);
+      overflow:hidden;
+    }
+    .phone{height:220px;max-width:164px;padding:12px;}
+    .tablet{height:212px;border-radius:20px;padding:14px;}
+    .device::before{content:"";position:absolute;left:50%;top:8px;transform:translateX(-50%);width:42px;height:4px;border-radius:999px;background:rgba(255,255,255,.20);z-index:2;}
+    .screen{position:relative;height:100%;border-radius:17px;background:linear-gradient(180deg,#111821,#07080b);padding:16px 12px 10px;overflow:hidden;}
+    .screen-title{font-size:10px;color:rgba(247,245,239,.72);letter-spacing:.12em;text-transform:uppercase;margin-bottom:9px;}
+    .route-card{height:76px;border-radius:12px;background:linear-gradient(135deg,#273825,#0e1115);border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden;margin-bottom:8px;}
+    .route-card::before{content:"";position:absolute;inset:0;background:linear-gradient(125deg, transparent 40%, rgba(229,149,28,.9) 42% 44%, transparent 47%)}
+    .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.stat{border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px;background:rgba(255,255,255,.035);font-size:10px;color:var(--muted)}.stat strong{display:block;color:#fff;font-size:17px;margin-top:2px}.stat .good{color:var(--ok)}
+    .tablet .screen{display:grid;grid-template-columns:1fr 1fr;gap:10px}.wide-map{grid-row:1/3;border-radius:14px;background:linear-gradient(135deg,#283b2d,#0c1013);position:relative;overflow:hidden}.wide-map::before{content:"";position:absolute;inset:0;background:linear-gradient(130deg, transparent 46%, #eb9d22 48% 50%, transparent 52%)}.widget{border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);padding:10px;font-size:11px;color:var(--muted)}.widget strong{display:block;color:#fff;font-size:20px;margin-top:2px}.weather-dot{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle, #ffe295 0 32%, rgba(242,212,121,.18) 34% 58%, transparent 60%);margin:8px auto 0}
+    .check-list{display:grid;gap:8px}.check-line{height:13px;border-radius:999px;background:rgba(112,213,114,.18);position:relative}.check-line::after{content:"✓";position:absolute;right:6px;top:-1px;color:var(--ok);font-size:10px}
+    .tools-tabs{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid rgba(255,255,255,.08);margin:0 -26px;padding:12px 24px;background:rgba(0,0,0,.22);gap:10px;}
+    .tools-tabs span{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-2);white-space:nowrap;}
+
+    .pricing-panel{padding:24px;display:grid;gap:16px;}
+    .plans{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .plan-card{position:relative;padding:20px;border-radius:18px;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.035);overflow:hidden;}
+    .plan-card.pro{border-color:rgba(242,212,121,.64);box-shadow:0 0 0 1px rgba(242,212,121,.10), 0 22px 64px rgba(214,143,24,.10)}
+    .plan-card.pro::before{content:"MOST POPULAR";position:absolute;right:16px;top:14px;padding:6px 10px;border-radius:999px;background:linear-gradient(180deg,#ffe090,#c59b38);color:#08090c;font-size:10px;font-weight:900;letter-spacing:.10em;}
+    .plan-name{font-size:14px;text-transform:uppercase;letter-spacing:.18em;color:var(--gold-2);font-weight:900;margin-bottom:12px;}
+    .price{font-size:38px;font-weight:950;letter-spacing:-.03em;line-height:1;}.price small{font-size:13px;color:var(--muted);font-weight:700;letter-spacing:0}.plan-copy{margin:10px 0 14px;color:rgba(247,245,239,.64);font-size:13px;line-height:1.45}.plan-card ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}.plan-card li{font-size:12.5px;color:rgba(247,245,239,.78);display:flex;gap:8px;line-height:1.35}.plan-card li::before{content:"✓";color:var(--gold-2);}
+    .pricing-cta{margin-top:4px;}
+
+    .bottom-strip{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr auto;
+      gap:18px;
+      align-items:center;
+      margin:0 0 44px;
+      padding:18px 24px;
+      border-radius:18px;
+      border:1px solid rgba(235,192,86,.22);
+      background:linear-gradient(90deg, rgba(211,159,39,.12), rgba(255,255,255,.03), rgba(211,159,39,.18));
+      box-shadow:0 24px 60px rgba(0,0,0,.30);
+    }
+    .strip-item{display:flex;align-items:center;gap:14px;min-width:0}.strip-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(242,212,121,.35);color:var(--gold-2);background:rgba(211,159,39,.07);flex:0 0 auto}.strip-item strong{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:var(--gold-2)}.strip-item span{display:block;margin-top:2px;font-size:13px;color:rgba(247,245,239,.64)}.download-final{min-width:340px;min-height:56px;font-size:15px;}
+
+    .mobile-menu{display:none;}
+    svg.icon{width:18px;height:18px;display:block;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+    @media (max-width: 1220px){
+      .site-shell{width:min(var(--max), calc(100vw - 36px));}
+      .nav{grid-template-columns:1fr auto}.nav-links{display:none}.mobile-menu{display:inline-flex}
+      .hero{grid-template-columns:1fr;padding-top:42px}.hero-art{min-height:390px}.pillars{grid-template-columns:repeat(2,1fr)}.tools-pricing{grid-template-columns:1fr}.bottom-strip{grid-template-columns:1fr 1fr}.download-final{min-width:0;width:100%}
+      .devices{grid-template-columns:150px 1fr 130px 126px;}
+    }
+    @media (max-width: 780px){
+      .topbar{padding-top:10px}.nav{border-radius:18px;grid-template-columns:1fr auto;padding:10px}.brand-wordmark strong{font-size:16px}.brand-wordmark span{font-size:10px}.brand img{width:42px;height:42px}.motto-pill{display:none}.hero::before{inset:22px -10px 0}.hero{padding-top:26px;gap:20px}.hero-subtitle{font-size:16px}.signal-row{gap:14px}.btn{width:100%}.hero-buttons{display:grid;grid-template-columns:1fr}.hero-art{min-height:310px}.hero-badge{right:20px;top:26px;width:120px}.hero-badge img{width:92px}.hero-badge span{font-size:10px}.vehicle-svg{right:46px;width:300px}.mountain-svg{height:180px;bottom:74px}.pillars{grid-template-columns:1fr}.tools-panel{padding:20px 18px 0}.devices{grid-template-columns:1fr 1fr;gap:12px}.tablet{grid-column:1/3}.phone{max-width:none}.tools-tabs{grid-template-columns:1fr 1fr;margin:0 -18px;padding:12px 18px}.tools-tabs span{justify-content:flex-start}.plans{grid-template-columns:1fr}.bottom-strip{grid-template-columns:1fr;margin-bottom:28px}.eyebrow{font-size:10px}.eyebrow::before,.eyebrow::after{width:24px}.gold-title{letter-spacing:.18em}.hero{min-height:auto}h1{font-size:clamp(46px, 15vw, 74px)}
+    }
+    @media (max-width: 520px){
+      .site-shell{width:min(var(--max), calc(100vw - 22px));}.nav-actions .btn-gold{display:none}.hero-art{min-height:260px}.vehicle-svg{right:24px;width:250px}.hero-badge{opacity:.92}.signal{min-width:100%;}.devices{grid-template-columns:1fr}.tablet{grid-column:auto}.tools-tabs{grid-template-columns:1fr}.bottom-strip{padding:16px}.download-final{font-size:13px;}.section-title{font-size:14px}.pillars{gap:12px}.pillar-card{min-height:auto}.mini-visual{min-height:112px}
+    }
     @media (prefers-reduced-motion: reduce){
-      .topoLayer{ animation:none; }
-      .flagshipLogoWrap::before,
-      .flagshipLogoWrap::after{ animation:none; }
-      .flagshipLogo{ transition:none; transform:none !important; }
-      .btn, .cta, .badge{ transition:none; }
+      html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
     }
   </style>
 </head>
-
 <body>
-  <!-- Subtle photo background -->
-  <div class="bgPhoto" aria-hidden="true"></div>
+  <header class="topbar">
+    <nav class="nav site-shell" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="Expedition Command System home">
+        <img src="assets/ecs-app-icon.png" alt="ECS app icon" />
+        <span class="brand-wordmark"><strong>Expedition</strong><span>Command System</span></span>
+      </a>
+      <div class="nav-links" aria-label="Site sections">
+        <a href="#features">Features</a>
+        <a href="#explore">Explore</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#support">Support</a>
+        <a href="#about">About</a>
+      </div>
+      <div class="nav-actions">
+        <a class="motto-pill" href="#features" aria-label="Explore with Confidence"><svg class="icon" viewBox="0 0 24 24"><path d="M3 19 9 8l4 7 3-5 5 9"/><path d="M8 19h13"/></svg>Explore with Confidence</a>
+        <a class="btn btn-gold" href="#download">Download ECS <span aria-hidden="true">↧</span></a>
+        <a class="btn mobile-menu" href="#features" aria-label="Open feature section">Menu</a>
+      </div>
+    </nav>
+  </header>
 
-  <!-- Topographic overlay -->
-  <div class="topoLayer" aria-hidden="true"></div>
-
-  <div class="page">
-    <header>
-      <div class="brand" aria-label="ECS brand">
-        <div class="brandMark" aria-hidden="true">
-          <!-- Put your actual app icon here -->
-          <img src="./ECS_App_Icon.png" alt="" />
+  <main id="top">
+    <section class="hero site-shell" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow">Explore with Confidence</div>
+        <h1 id="hero-title"><span class="metal">Expedition</span><span class="gold-title">Command System</span></h1>
+        <p class="hero-subtitle">
+          Tactical-grade expedition planning and real-time operational confidence.
+          <span>Plan smarter. Operate safely. Explore farther. ECS brings your build, your route, and your team together — online or off the grid.</span>
+        </p>
+        <div class="signal-row" aria-label="Key benefits">
+          <div class="signal"><span class="signal-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="m4 10 8-8 8 8"/><path d="M6 18h12"/></svg></span><span><strong>Offline-first</strong><span>Built for anywhere.</span></span></div>
+          <div class="signal"><span class="signal-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M6 17h12l-1-5H7l-1 5Z"/><path d="M7 12l2-4h6l2 4"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/></svg></span><span><strong>Tactical & reliable</strong><span>Mission-ready tools.</span></span></div>
+          <div class="signal"><span class="signal-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 21s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2"/></svg></span><span><strong>Real-time confidence</strong><span>Data that keeps you moving.</span></span></div>
         </div>
-
-        <div class="brandText">
-          <div class="kicker">Expedition Command</div>
-          <div class="name">System</div>
+        <div class="hero-buttons">
+          <a class="btn btn-gold" href="#features">View the App <span aria-hidden="true">▯</span></a>
+          <a class="btn" href="#pricing">Compare Plans <span aria-hidden="true">☰</span></a>
         </div>
       </div>
 
-      <div class="navActions">
-        <div class="chip" title="Status">
-          <span class="dot" aria-hidden="true"></span>
-          <span>Plan with Free. Operate with Pro.</span>
-        </div>
-        <button class="btn btnPrimary" id="startPro" type="button">Start ECS Pro</button>
+      <div class="hero-art" aria-hidden="true">
+        <div class="hero-badge"><img src="assets/ecs-brand-badge.png" alt="" /><span>Explore with Confidence</span></div>
+        <svg class="mountain-svg" viewBox="0 0 900 360" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4edd7" stop-opacity=".95"/><stop offset=".46" stop-color="#46474a" stop-opacity=".78"/><stop offset="1" stop-color="#090a0d" stop-opacity="1"/></linearGradient>
+            <linearGradient id="m2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9b45b" stop-opacity=".92"/><stop offset=".44" stop-color="#282a2f" stop-opacity=".86"/><stop offset="1" stop-color="#07080b"/></linearGradient>
+          </defs>
+          <path d="M-40 330 115 112 230 252 356 62 522 286 638 118 804 320 940 146 940 360 -40 360Z" fill="url(#m2)" opacity=".78"/>
+          <path d="M0 340 172 142 252 236 402 72 612 322 740 180 920 344 920 360 0 360Z" fill="url(#m1)" opacity=".88"/>
+          <path d="M172 142 206 247 252 236 402 72 350 205 412 174 612 322 740 180 704 264 920 344" fill="none" stroke="#f2d479" stroke-opacity=".22" stroke-width="2"/>
+          <path d="M0 340 C150 305 255 324 366 298 S660 288 920 344" fill="none" stroke="#e8bb48" stroke-opacity=".20"/>
+        </svg>
+        <svg class="vehicle-svg" viewBox="0 0 520 260" aria-hidden="true">
+          <defs><linearGradient id="v" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3c3a33"/><stop offset=".45" stop-color="#17191d"/><stop offset="1" stop-color="#060609"/></linearGradient></defs>
+          <path d="M88 145 124 92h170l76 52 48 10c20 4 34 22 34 42v18H55v-35c0-20 14-36 33-34Z" fill="url(#v)" stroke="#695a34" stroke-width="3"/>
+          <path d="M137 103h71v42h-98l27-42Zm82 0h67l53 42H219v-42Z" fill="#0b0d10" stroke="#c8a24a" stroke-opacity=".45"/>
+          <path d="M140 76h154" stroke="#c8a24a" stroke-width="7" stroke-linecap="round" opacity=".5"/>
+          <circle cx="128" cy="213" r="42" fill="#050506" stroke="#6d6039" stroke-width="5"/><circle cx="128" cy="213" r="18" fill="#15171b" stroke="#c8a24a" stroke-opacity=".5"/>
+          <circle cx="370" cy="213" r="42" fill="#050506" stroke="#6d6039" stroke-width="5"/><circle cx="370" cy="213" r="18" fill="#15171b" stroke="#c8a24a" stroke-opacity=".5"/>
+          <path d="M448 162h25" stroke="#f2d479" stroke-width="8" stroke-linecap="round"/><path d="M70 162h25" stroke="#f35e48" stroke-width="8" stroke-linecap="round"/>
+          <path d="M312 78h56v16h-56z" fill="#0b0d10" stroke="#c8a24a" stroke-opacity=".42"/><path d="M330 58v20m24-20v20" stroke="#c8a24a" stroke-opacity=".48" stroke-width="4"/>
+          <path d="M45 214h480" stroke="#1e170b" stroke-width="7" stroke-linecap="round"/>
+        </svg>
+        <div class="rock-line"></div>
       </div>
-    </header>
+    </section>
 
-    <main>
-      <!-- LEFT: Flagship logo + core value -->
-      <section class="heroPanel" aria-label="ECS Hero">
-        <div class="flagshipLogoWrap" id="flagshipLogo">
-          <img
-            class="flagshipLogo"
-            src="./ECS_Flagship_Logo_Tight_Centered.png"
-            alt="Expedition Command System flagship logo"
-            draggable="false"
-          />
+    <section class="pillars site-shell" id="features" aria-label="ECS operating pillars">
+      <article class="pillar-card">
+        <div class="pillar-top"><span class="number">1</span><h2>Plan</h2></div>
+        <h3>Build the mission.</h3>
+        <p>Configure vehicles, build routes, and prepare every detail before you go.</p>
+        <ul class="checks">
+          <li>Vehicle profiles & payloads</li><li>Waypoints, GPX routes & zones</li><li>Fuel, water & time calculations</li><li>Offline-first mission packages</li>
+        </ul>
+        <div class="mini-visual map-visual"></div>
+      </article>
+      <article class="pillar-card">
+        <div class="pillar-top"><span class="number">2</span><h2>Operate</h2></div>
+        <h3>Run with real-time awareness.</h3>
+        <p>Stay informed with live data, navigation, weather, and operational tools.</p>
+        <ul class="checks">
+          <li>Live dashboard widgets</li><li>Turn-by-turn navigation</li><li>Weather & remoteness intel</li><li>Team status & check-ins</li>
+        </ul>
+        <div class="mini-visual dashboard-visual"><div class="dash-gauge">23<span>mi/hr</span></div><div class="dash-map"></div><div class="dash-list"><i></i><i></i><i></i><i></i></div></div>
+      </article>
+      <article class="pillar-card" id="explore">
+        <div class="pillar-top"><span class="number">3</span><h2>Explore</h2></div>
+        <h3>Discover more, go deeper.</h3>
+        <p>Find hidden gems, popular trails, and intelligent recommendations.</p>
+        <ul class="checks">
+          <li>Hidden gems & local intel</li><li>Popular trails & route ideas</li><li>Campsite & resource insights</li><li>Community contributed data</li>
+        </ul>
+        <div class="mini-visual camp-visual"><div class="camp-card"><strong>Hidden Gem</strong>Alpine Lake Basin · 4.8 ★</div></div>
+      </article>
+      <article class="pillar-card" id="support">
+        <div class="pillar-top"><span class="number">4</span><h2>Protect</h2></div>
+        <h3>Safety is the mission.</h3>
+        <p>Be prepared for the unexpected with tools that protect your team.</p>
+        <ul class="checks">
+          <li>SOS & dispatch integration</li><li>Safety protocols & checklists</li><li>Incident reporting & recovery</li><li>Offline readiness & redundancy</li>
+        </ul>
+        <div class="mini-visual sos-visual"><span class="sos-dot">SOS</span></div>
+      </article>
+    </section>
+
+    <section class="tools-pricing site-shell" aria-label="ECS tools and pricing">
+      <div class="section-panel tools-panel" id="about">
+        <h2 class="section-title">Powerful tools. Beautifully engineered.</h2>
+        <p class="section-copy">Designed for the trail. Built for the mission.</p>
+        <div class="devices" aria-hidden="true">
+          <div class="device phone"><div class="screen"><div class="screen-title">Mission Overview</div><div class="route-card"></div><div class="stat-grid"><div class="stat"><span>Route</span><strong>126</strong></div><div class="stat"><span>Days</span><strong>2.5</strong></div></div></div></div>
+          <div class="device tablet"><div class="screen"><div class="wide-map"></div><div class="widget">Next Turn<strong>2.3 mi</strong></div><div class="widget">Fuel Range<strong>312 mi</strong></div></div></div>
+          <div class="device phone"><div class="screen"><div class="screen-title">Dashboard</div><div class="stat"><span>Weather</span><strong>37°</strong></div><div class="weather-dot"></div></div></div>
+          <div class="device phone"><div class="screen"><div class="screen-title">Check-in</div><div class="stat"><span>Status</span><strong class="good">Good</strong></div><div class="check-list"><span class="check-line"></span><span class="check-line"></span><span class="check-line"></span><span class="check-line"></span></div></div></div>
         </div>
+        <div class="tools-tabs" aria-label="Core tools"><span>▣ Offline Maps</span><span>◆ Live Data</span><span>➤ Navigation</span><span>● Team Sync</span><span>✓ Mission Ready</span></div>
+      </div>
 
-        <div class="brandline" aria-label="ECS tagline">
-          <div class="dot" aria-hidden="true"></div>
-          <span>Hybrid Civilian + Agency Ready • Offline-first mission design</span>
-        </div>
-
+      <div class="section-panel pricing-panel" id="pricing">
         <div>
-          <h1>Expedition Command System</h1>
-          <p class="sub">
-            Tactical-grade expedition planning, loadout configuration, and real-time mission dashboards—
-            built to bridge your build, your route, and your operational risk in one system.
-          </p>
+          <h2 class="section-title">Simple pricing. Powerful value.</h2>
+          <p class="section-copy">Free is planning. Pro is expedition mode.</p>
         </div>
-
-        <section class="row" aria-label="Key capabilities">
-          <div class="pill">
-            <div class="iconbox" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-4 1.4 1.4-5.4 5.4L7.6 12.4 9 11zM4 5h10v2H4V5zm0 6h4v2H4v-2zm0 6h10v2H4v-2z"/></svg>
-            </div>
-            <div>
-              <h3>Mission Planning</h3>
-              <p>Framework setup, trip parameters, readiness scoring, and deployment control—fast and structured.</p>
-            </div>
-          </div>
-
-          <div class="pill">
-            <div class="iconbox" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zM13 3v6h8V3h-8z"/></svg>
-            </div>
-            <div>
-              <h3>Live Dashboard</h3>
-              <p>Widget-based ops view for systems, consumables, alerts—built for real-time decisions.</p>
-            </div>
-          </div>
-
-          <div class="pill">
-            <div class="iconbox" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 0 1 7-7zm0 9.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5.5z"/></svg>
-            </div>
-            <div>
-              <h3>Navigation Bridge</h3>
-              <p>Imports/exports across GPX ecosystems—turn route data into fuel/water/time risk clarity.</p>
-            </div>
-          </div>
-        </section>
-
-        <div class="actions" aria-label="Primary actions">
-          <a class="cta" href="#" id="exploreCta">Explore the System</a>
-
-          <div class="storeBadges" aria-label="App store links">
-            <a class="badge" href="#" aria-label="Download on the App Store" id="appStore">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M16.7 13.2c0 2.7 2.4 3.6 2.4 3.6s-1.8 5.2-4.2 5.2c-1.1 0-2-.8-3.2-.8s-2.2.8-3.2.8C3.1 22 1 16.2 1 13.1c0-3 1.8-4.6 3.6-4.6 1.1 0 2.1.8 3.2.8s1.9-.8 3.2-.8c.5 0 2.3.1 3.4 1.7-2.9 1.6-2.7 5.1-.7 6zM13.9 1.8c.7-.9 1.2-2.1 1.1-3.3-1 .1-2.2.7-2.9 1.6-.7.8-1.2 2-1 3.2 1.1.1 2.2-.6 2.8-1.5z"/>
-              </svg>
-              <span class="txt">
-                <span class="small">Download on the</span>
-                <span class="big">App Store</span>
-              </span>
-            </a>
-
-            <a class="badge" href="#" aria-label="Get it on Google Play" id="googlePlay">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3.5 2.8c-.3.3-.5.7-.5 1.2v16c0 .5.2.9.5 1.2l9.6-9.2-9.6-9.2zM14.2 12l2.6-2.5-1.7-1-2.9 2.8 2 1.9zm0 0l-2 1.9 2.9 2.8 1.7-1-2.6-2.5zm3.6-3.5L20.5 7c.7-.4 1.2-.3 1.6.1.4.4.4 1 0 1.4L18 12l-1.2-1.2zM17.8 15.5L18 12l4.1 3.5c.4.4.4 1 0 1.4-.4.4-.9.5-1.6.1l-2.7-1.5z"/>
-              </svg>
-              <span class="txt">
-                <span class="small">Get it on</span>
-                <span class="big">Google Play</span>
-              </span>
-            </a>
-          </div>
+        <div class="plans">
+          <article class="plan-card">
+            <div class="plan-name">ECS Free</div>
+            <div class="price">$0<small>/month</small></div>
+            <p class="plan-copy">Core planning & navigation for every explorer.</p>
+            <ul><li>1 Vehicle Profile</li><li>1 Active Mission</li><li>Basic Waypoints</li><li>Offline Maps</li><li>Community Data</li></ul>
+          </article>
+          <article class="plan-card pro">
+            <div class="plan-name">ECS Pro</div>
+            <div class="price">$4.99<small>/month</small></div>
+            <p class="plan-copy">Advanced tools, live data, and mission-critical features.</p>
+            <ul><li>Unlimited Vehicles & Missions</li><li>Live Dashboard & Widgets</li><li>Weather & Remoteness</li><li>SOS & Dispatch Integration</li><li>Priority Support</li></ul>
+          </article>
         </div>
-      </section>
+        <a class="btn btn-gold btn-wide pricing-cta" href="#download">Start ECS Pro</a>
+      </div>
+    </section>
 
-      <!-- RIGHT: Pricing module -->
-      <aside class="pricingPanel" aria-label="Pricing">
-        <div class="priceTop">
-          <div class="planTitle">
-            <div class="k">Pricing</div>
-            <h2 class="t">Free vs Pro</h2>
-            <p class="p">Free is planning. <strong>Pro is Expedition Mode.</strong></p>
-          </div>
-
-          <div class="priceTag" aria-label="Pro price">
-            <div class="amt">$9.99</div>
-            <div class="per">Per user / month</div>
-          </div>
-        </div>
-
-        <div class="compare" role="region" aria-label="Plan comparison">
-          <div class="card">
-            <div class="cardHead">
-              <div class="name">ECS Free</div>
-              <div class="tag">Prepare</div>
-            </div>
-            <ul class="feat">
-              <li><span class="check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(156,163,175,.95)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>1 Vehicle Profile</li>
-
-              <li><span class="check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(156,163,175,.95)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>1 Active Mission + 2 Saved</li>
-
-              <li><span class="check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(156,163,175,.95)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>Fixed Expedition Layout (Lite)</li>
-
-              <li><span class="check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(156,163,175,.95)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>Basic Map + Manual Waypoints</li>
-
-              <li><span class="check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(156,163,175,.95)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>Safety Protocol Library</li>
-            </ul>
-            <div class="mutedNote">Advanced systems locked.</div>
-          </div>
-
-          <div class="card pro">
-            <div class="cardHead">
-              <div class="name">ECS Pro</div>
-              <div class="tag">Operate</div>
-            </div>
-            <ul class="feat">
-              <li><span class="check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(226,196,109,.98)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>Unlimited Vehicles & Missions</li>
-
-              <li><span class="check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(226,196,109,.98)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>Full Widget Engine (Add/Remove/Resize)</li>
-
-              <li><span class="check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(226,196,109,.98)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>Fuel / Water / Battery Projections</li>
-
-              <li><span class="check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(226,196,109,.98)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>Remoteness & Bailout Intelligence</li>
-
-              <li><span class="check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: rgba(226,196,109,.98)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-              </span>Unlimited GPX Import/Export + Analytics</li>
-            </ul>
-            <div class="mutedNote" style="color: rgba(198,168,90,.85);">Expedition Mode: locked, glance-ready operation.</div>
-          </div>
-        </div>
-
-        <div class="proStrip" aria-label="Pro includes">
-          <div class="label">Pro includes</div>
-          <ul>
-            <li><span class="proDot" aria-hidden="true"></span>High-contrast, glance-ready Expedition Mode</li>
-            <li><span class="proDot" aria-hidden="true"></span>Saved layouts for Highway vs Expedition</li>
-            <li><span class="proDot" aria-hidden="true"></span>Projections tuned to your vehicle build</li>
-            <li><span class="proDot" aria-hidden="true"></span>Full history, exports, and route tooling</li>
-          </ul>
-        </div>
-
-        <!-- This is what removes the “huge void” -->
-        <div class="ctaBox" aria-label="Pricing actions">
-          <div class="ctaRow">
-            <button class="btn btnPrimary btnWide" id="pricingStartPro" type="button">Start ECS Pro</button>
-            <button class="btn btnGhost btnWide" id="pricingCompare" type="button">Compare Features</button>
-          </div>
-          <div class="fine">Cancel anytime. Access continues through your billing period.</div>
-        </div>
-      </aside>
-    </main>
-  </div>
+    <section class="bottom-strip site-shell" id="download" aria-label="Download ECS">
+      <div class="strip-item"><span class="strip-icon">◎</span><span><strong>Offline-first</strong><span>Works without cell service</span></span></div>
+      <div class="strip-item"><span class="strip-icon">▰</span><span><strong>Built for expeditions</strong><span>Overland. Off-road. Anywhere.</span></span></div>
+      <div class="strip-item"><span class="strip-icon">♢</span><span><strong>Your data. Your control.</strong><span>Private, secure, mission-focused.</span></span></div>
+      <a class="btn btn-gold download-final" href="#top">Download ECS <span aria-hidden="true"> ▶︎ 🌐</span></a>
+    </section>
+  </main>
 
   <script>
-    // Flagship logo parallax
-    (function () {
-      const wrap = document.getElementById("flagshipLogo");
-      const img = wrap?.querySelector(".flagshipLogo");
-      if (!wrap || !img) return;
-
-      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (prefersReduced) return;
-
-      let raf = null;
-      let target = { x: 0, y: 0 };
-
-      function apply() {
-        raf = null;
-        const px = (target.x * 10).toFixed(2) + "px";
-        const py = (target.y * 10).toFixed(2) + "px";
-        const ry = (target.x * 6).toFixed(2) + "deg";
-        const rx = (-target.y * 6).toFixed(2) + "deg";
-        img.style.setProperty("--px", px);
-        img.style.setProperty("--py", py);
-        img.style.setProperty("--rx", rx);
-        img.style.setProperty("--ry", ry);
-      }
-
-      function onMove(e) {
-        const rect = wrap.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const nx = (e.clientX - cx) / (rect.width / 2);
-        const ny = (e.clientY - cy) / (rect.height / 2);
-        target.x = Math.max(-1, Math.min(1, nx)) * 0.18;
-        target.y = Math.max(-1, Math.min(1, ny)) * 0.18;
-        if (!raf) raf = requestAnimationFrame(apply);
-      }
-
-      function onLeave() {
-        target.x = 0; target.y = 0;
-        if (!raf) raf = requestAnimationFrame(apply);
-      }
-
-      wrap.addEventListener("mousemove", onMove);
-      wrap.addEventListener("mouseleave", onLeave);
-    })();
-
-    // Wire these when ready (currently safe stubs)
-    const stub = (msg) => (e) => { e.preventDefault?.(); console.log(msg); };
-
-    document.getElementById("startPro")?.addEventListener("click", stub("Start ECS Pro (header)"));
-    document.getElementById("pricingStartPro")?.addEventListener("click", stub("Start ECS Pro (pricing)"));
-    document.getElementById("pricingCompare")?.addEventListener("click", stub("Compare Features"));
-    document.getElementById("exploreCta")?.addEventListener("click", stub("Explore the System"));
-    document.getElementById("appStore")?.addEventListener("click", stub("App Store link"));
-    document.getElementById("googlePlay")?.addEventListener("click", stub("Google Play link"));
+    const heroArt = document.querySelector('.hero-art');
+    const vehicle = document.querySelector('.vehicle-svg');
+    if (heroArt && vehicle && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heroArt.addEventListener('pointermove', (event) => {
+        const rect = heroArt.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        vehicle.style.transform = `translate(${x * 10}px, ${y * 8}px)`;
+      });
+      heroArt.addEventListener('pointerleave', () => {
+        vehicle.style.transform = 'translate(0,0)';
+      });
+    }
   </script>
 </body>
 </html>
-
