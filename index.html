@@ -516,6 +516,121 @@
       display:block;
     }
 
+    /* ECS closing polish: taller hero + slightly shorter bottom row */
+    .page-stack{
+      grid-template-rows:minmax(0,.96fr) minmax(0,1.08fr) minmax(0,1.05fr) !important;
+      gap:14px;
+      height:calc(100vh - 12px);
+      padding:6px 0;
+    }
+
+    .hero{
+      padding:16px 22px 16px !important;
+      gap:22px;
+    }
+
+    .hero-copy{
+      justify-content:center !important;
+      padding:10px 12px 8px !important;
+      overflow:hidden;
+    }
+
+    .hero-copy::before{
+      inset:3% 2% 3% !important;
+      background-size:auto 92% !important;
+      opacity:.155 !important;
+      background-position:center center !important;
+    }
+
+    .eyebrow{
+      margin:0 0 8px !important;
+      font-size:11.5px !important;
+      line-height:1.1;
+    }
+
+    h1{
+      font-size:clamp(52px,4.75vw,84px) !important;
+      line-height:.90 !important;
+      margin:0 !important;
+    }
+
+    .gold-title{
+      margin-top:7px !important;
+    }
+
+    .hero-subtitle{
+      margin:13px 0 0 !important;
+      max-width:760px;
+      font-size:15.4px !important;
+      line-height:1.38 !important;
+    }
+
+    .hero-subtitle span{
+      margin-top:5px !important;
+    }
+
+    .signal-row{
+      margin-top:14px !important;
+      gap:10px 15px !important;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .signal{
+      grid-template-columns:36px auto !important;
+      min-width:162px !important;
+      gap:9px !important;
+    }
+
+    .signal-icon{
+      width:36px !important;
+      height:36px !important;
+    }
+
+    .signal-icon .icon{
+      width:19px !important;
+      height:19px !important;
+    }
+
+    .signal strong{
+      font-size:10.5px !important;
+      letter-spacing:.13em !important;
+    }
+
+    .signal span span{
+      font-size:10.5px !important;
+    }
+
+    .tools-pricing{
+      min-height:0;
+    }
+
+    .system-cutaway-panel,
+    .pricing-panel{
+      height:100%;
+      min-height:0;
+    }
+
+    .system-cutaway-panel{
+      padding:8px !important;
+    }
+
+    .system-cutaway-panel img{
+      width:100%;
+      height:100%;
+      object-fit:fill !important;
+      object-position:center center !important;
+      transform:none !important;
+      border-radius:18px;
+    }
+
+    @media (max-width:1280px){
+      .page-stack{
+        height:auto !important;
+        grid-template-rows:none !important;
+      }
+    }
+
   </style>
 </head>
 <body>
