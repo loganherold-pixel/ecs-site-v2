@@ -326,6 +326,154 @@
       .hero-subtitle{font-size:16px}
     }
 
+
+    /* ECS final polish pass */
+    body{overflow:hidden;height:100vh}
+
+    .page-stack{
+      grid-template-rows:minmax(0,.76fr) minmax(0,1.18fr) minmax(0,1.30fr);
+      gap:14px;
+      height:calc(100vh - 12px);
+      padding:6px 0;
+    }
+
+    .hero{
+      padding:14px 22px;
+      gap:22px;
+      border-radius:28px;
+    }
+    .hero-copy{padding:4px 12px}
+    .hero-copy::before{
+      inset:5% 2%;
+      background-size:auto 88%;
+      background-position:center center;
+      opacity:.145;
+      filter:drop-shadow(0 0 42px rgba(220,164,33,.18));
+    }
+    .eyebrow{margin-bottom:9px}
+    h1{font-size:clamp(50px,4.9vw,86px)}
+    .gold-title{margin-top:7px}
+    .hero-subtitle{
+      margin:16px 0 0;
+      max-width:760px;
+      font-size:16.5px;
+      line-height:1.48;
+    }
+    .hero-subtitle span{margin-top:7px}
+    .signal-row{margin-top:20px;gap:12px}
+    .signal{grid-template-columns:38px auto;min-width:174px;gap:10px}
+    .signal-icon{width:38px;height:38px}
+    .signal-icon .icon{width:20px;height:20px}
+    .signal strong{font-size:11px}
+    .signal span span{font-size:11px}
+    .hero-art{border-radius:26px}
+
+    .pillars{gap:14px;align-items:stretch}
+    .pillar-card{
+      display:flex;
+      flex-direction:column;
+      padding:18px 18px 18px;
+      border-radius:24px;
+      overflow:hidden;
+      min-height:0;
+    }
+    .pillar-top{margin-bottom:8px}
+    .pillar-card h3{margin:8px 0 8px}
+    .pillar-card p{margin:0 0 10px;font-size:12.4px;line-height:1.38}
+    .checks{gap:6px;margin:0}
+    .checks li{font-size:11.7px;line-height:1.25}
+    .mini-visual{
+      position:relative;
+      flex:0 0 122px;
+      min-height:122px;
+      height:122px;
+      margin-top:auto;
+      padding:6px;
+      border:1px solid rgba(242,212,121,.22);
+      border-radius:17px;
+      background:linear-gradient(180deg,rgba(11,13,17,.90),rgba(5,6,8,.96))!important;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.035),inset 0 0 38px rgba(242,212,121,.05),0 10px 24px rgba(0,0,0,.22);
+      overflow:hidden;
+    }
+    .mini-visual img{
+      position:absolute;
+      inset:6px;
+      width:calc(100% - 12px);
+      height:calc(100% - 12px);
+      display:block;
+      object-fit:contain;
+      object-position:center center;
+      transform:none;
+      border-radius:12px;
+      z-index:0;
+    }
+    .map-visual img,
+    .dashboard-visual img,
+    .camp-visual img,
+    .sos-visual img{object-fit:contain;object-position:center center}
+    .mini-visual::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:linear-gradient(180deg,rgba(7,9,12,.03),rgba(7,9,12,.06))}
+    .mini-visual::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(120% 100% at 50% 50%,transparent 72%,rgba(6,7,10,.20) 100%)}
+
+    .tools-pricing{
+      grid-template-columns:minmax(0,1.54fr) minmax(340px,.86fr);
+      gap:14px;
+      align-items:stretch;
+      min-height:0;
+    }
+    .system-cutaway-panel{
+      height:100%;
+      min-height:0;
+      padding:0;
+      border-radius:24px;
+      border:1px solid rgba(235,192,86,.24);
+      background:#050607;
+      display:flex;
+      align-items:stretch;
+      justify-content:center;
+      overflow:hidden;
+      box-shadow:0 22px 72px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .system-cutaway-panel img{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+      object-position:center center;
+      transform:scale(1.006);
+      filter:saturate(1.04) contrast(1.02);
+    }
+    .pricing-panel{
+      height:100%;
+      min-height:0;
+      padding:18px;
+      gap:12px;
+      overflow:hidden;
+      border-radius:24px;
+      display:flex;
+      flex-direction:column;
+    }
+    .pricing-panel > div:first-child{flex:0 0 auto}
+    .plans{flex:1 1 auto;min-height:0;gap:10px;align-items:stretch}
+    .plan-card{padding:14px 14px 12px;min-height:0}
+    .plan-name{font-size:13px;margin-bottom:9px}
+    .price{font-size:32px}
+    .plan-copy{margin:8px 0 10px;font-size:12px;line-height:1.35}
+    .plan-card ul{gap:6px}
+    .plan-card li{font-size:11.5px;line-height:1.22}
+    .pricing-cta{
+      flex:0 0 52px;
+      min-height:52px;
+      margin-top:4px;
+      margin-bottom:0;
+      border-radius:14px;
+    }
+
+    @media (max-width:1280px){
+      body{overflow:auto;height:auto}
+      .page-stack{height:auto;grid-template-rows:none}
+      .mini-visual{flex-basis:132px;height:132px}
+    }
+
   </style>
 </head>
 <body>
@@ -384,7 +532,7 @@
 
     <section class="tools-pricing" aria-label="ECS tools and pricing">
       <div class="section-panel system-cutaway-panel" id="about" aria-label="ECS system cutaway overview">
-        <img src="ecs-system-cutaway.png" alt="ECS system cutaway: fleet command, navigation, explore, dashboard widgets, dispatch, intelligence, telemetry, weather, remoteness, and offline field reliability" />
+        <img src="ecs-system-cutaway-polished.png" alt="ECS system cutaway: fleet command, navigation, explore, dashboard widgets, dispatch, intelligence, telemetry, weather, remoteness, and offline field reliability" />
       </div>
 
       <div class="section-panel pricing-panel" id="pricing">
@@ -397,13 +545,13 @@
             <div class="plan-name">ECS Free</div>
             <div class="price">$0<small>/month</small></div>
             <p class="plan-copy">Core planning & navigation for every explorer.</p>
-            <ul><li>1 Vehicle Profile</li><li>1 Active Mission</li><li>Basic Waypoints</li><li>Offline Maps</li><li>Community Data</li></ul>
+            <ul><li>1 Vehicle Profile</li><li>1 Active Mission</li><li>Basic Waypoints</li><li>Offline Maps</li></ul>
           </article>
           <article class="plan-card pro">
             <div class="plan-name">ECS Pro</div>
             <div class="price">$4.99<small>/month</small></div>
             <p class="plan-copy">Advanced tools, live data, and mission-critical features.</p>
-            <ul><li>Unlimited Vehicles & Missions</li><li>Live Dashboard & Widgets</li><li>Weather & Remoteness</li><li>SOS & Dispatch Integration</li><li>Priority Support</li></ul>
+            <ul><li>Unlimited Vehicles & Missions</li><li>Live Dashboard & Widgets</li><li>Weather & Remoteness</li><li>SOS & Dispatch Integration</li><li>Community Data</li></ul>
           </article>
         </div>
         <a class="btn btn-gold btn-wide pricing-cta" href="#download">Start ECS Pro</a>
