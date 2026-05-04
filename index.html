@@ -368,6 +368,70 @@
       .hero-subtitle{font-size:16px}
     }
 
+
+    /* ECS v2 polish fixes */
+    .page-stack{
+      grid-template-rows:minmax(0,1.02fr) minmax(0,.82fr) minmax(0,.96fr);
+      gap:14px;
+      height:calc(100vh - 18px);
+      padding:9px 0;
+    }
+    .hero{padding:20px 26px;gap:22px}
+    .hero-copy::before{
+      inset:2% 6% 2%;
+      background-size:auto 92%;
+      background-position:center center;
+      opacity:.13;
+      filter:drop-shadow(0 0 48px rgba(220,164,33,.20));
+    }
+    .signal-icon{width:40px;height:40px;border-color:rgba(235,192,86,.42);background:radial-gradient(circle at 50% 45%,rgba(214,164,45,.16),rgba(214,164,45,.06));box-shadow:0 0 0 5px rgba(214,164,45,.045), inset 0 1px 0 rgba(255,255,255,.08)}
+    .signal strong{letter-spacing:.15em}
+
+    .pillar-card{padding:18px 18px 18px}
+    .mini-visual{
+      min-height:126px;
+      margin-top:14px;
+      background:none !important;
+      background-color:rgba(8,10,14,.72);
+      border:1px solid rgba(242,212,121,.14);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.03), inset 0 0 36px rgba(242,212,121,.05), 0 10px 24px rgba(0,0,0,.18);
+    }
+    .mini-visual img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+      object-position:center center;
+      transform:scale(1.015);
+      z-index:0;
+    }
+    .map-visual img{object-position:center 54%}
+    .dashboard-visual img{object-position:center 50%}
+    .camp-visual img{object-position:center 56%}
+    .sos-visual img{object-position:center 50%}
+    .mini-visual::before{
+      background:linear-gradient(180deg,rgba(7,9,12,.02),rgba(7,9,12,.10));
+      z-index:1;
+    }
+    .mini-visual::after{
+      z-index:2;
+      background:linear-gradient(180deg,rgba(5,6,9,.02),rgba(5,6,9,.14)), radial-gradient(120% 100% at 50% 50%, transparent 60%, rgba(6,7,10,.24) 100%);
+    }
+
+    .tools-pricing{grid-template-columns:minmax(0,1.52fr) minmax(330px,.90fr);gap:14px}
+    .tools-panel{padding:18px 18px 0}
+    .devices{min-height:214px;margin-top:16px}
+    .pricing-panel{padding:20px 18px 18px;gap:14px}
+    .plans{align-items:stretch}
+    .plan-card{padding:16px 16px 14px}
+    .pricing-cta{margin-top:4px;min-height:54px}
+
+    @media (max-width: 1280px){
+      .page-stack{height:auto;grid-template-rows:none}
+    }
+
   </style>
 </head>
 <body>
@@ -382,9 +446,9 @@
           <span>Plan smarter. Operate safely. Explore farther. ECS brings your build, your route, and your team together — online or off the grid.</span>
         </p>
         <div class="signal-row" aria-label="Key benefits">
-          <div class="signal"><span class="signal-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="m4 10 8-8 8 8"/><path d="M6 18h12"/></svg></span><span><strong>Offline-first</strong><span>Built for anywhere.</span></span></div>
-          <div class="signal"><span class="signal-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M6 17h12l-1-5H7l-1 5Z"/><path d="M7 12l2-4h6l2 4"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/></svg></span><span><strong>Tactical & reliable</strong><span>Mission-ready tools.</span></span></div>
-          <div class="signal"><span class="signal-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M4 12h4l2-7 4 14 2-7h4"/></svg></span><span><strong>Real-time confidence</strong><span>Data that keeps you moving.</span></span></div>
+          <div class="signal"><span class="signal-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6"/><path d="M12 10v6"/><path d="m9.5 13.5 2.5 2.5 2.5-2.5"/></svg></span><span><strong>Offline-first</strong><span>Built for anywhere.</span></span></div>
+          <div class="signal"><span class="signal-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.7 3.1 7.1 7 10 3.9-2.9 7-5.3 7-10V6l-7-3Z"/><path d="m9.2 12.3 1.9 1.9 3.9-4.1"/></svg></span><span><strong>Tactical & reliable</strong><span>Mission-ready tools.</span></span></div>
+          <div class="signal"><span class="signal-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M4 12h3l1.6-3.2 3 6.4 2.2-4.2H20"/></svg></span><span><strong>Real-time confidence</strong><span>Data that keeps you moving.</span></span></div>
         </div>
       </div>
 
@@ -399,28 +463,28 @@
         <h3>Build the mission.</h3>
         <p>Configure vehicles, build routes, and prepare every detail before you go.</p>
         <ul class="checks"><li>Vehicle profiles & payloads</li><li>Waypoints, GPX routes & zones</li><li>Fuel, water & time calculations</li><li>Offline-first mission packages</li></ul>
-        <div class="mini-visual map-visual" aria-hidden="true"></div>
+        <div class="mini-visual map-visual" aria-hidden="true"><img src="ecs-plan-route-map.png" alt="" /></div>
       </article>
       <article class="pillar-card">
         <div class="pillar-top"><span class="number">2</span><h2>Operate</h2></div>
         <h3>Run with real-time awareness.</h3>
         <p>Stay informed with live data, navigation, weather, and operational tools.</p>
         <ul class="checks"><li>Live dashboard widgets</li><li>Turn-by-turn navigation</li><li>Weather & remoteness intel</li><li>Team status & check-ins</li></ul>
-        <div class="mini-visual dashboard-visual" aria-hidden="true"></div>
+        <div class="mini-visual dashboard-visual" aria-hidden="true"><img src="ecs-operate-live-dashboard.png" alt="" /></div>
       </article>
       <article class="pillar-card" id="explore">
         <div class="pillar-top"><span class="number">3</span><h2>Explore</h2></div>
         <h3>Discover more, go deeper.</h3>
         <p>Find hidden gems, popular trails, and intelligent recommendations.</p>
         <ul class="checks"><li>Hidden gems & local intel</li><li>Popular trails & route ideas</li><li>Campsite & resource insights</li><li>Community contributed data</li></ul>
-        <div class="mini-visual camp-visual" aria-hidden="true"></div>
+        <div class="mini-visual camp-visual" aria-hidden="true"><img src="ecs-explore-hidden-gem.png" alt="" /></div>
       </article>
       <article class="pillar-card" id="support">
         <div class="pillar-top"><span class="number">4</span><h2>Protect</h2></div>
         <h3>Safety is the mission.</h3>
         <p>Be prepared for the unexpected with tools that protect your team.</p>
         <ul class="checks"><li>SOS & dispatch integration</li><li>Safety protocols & checklists</li><li>Incident reporting & recovery</li><li>Offline readiness & redundancy</li></ul>
-        <div class="mini-visual sos-visual" aria-hidden="true"></div>
+        <div class="mini-visual sos-visual" aria-hidden="true"><img src="ecs-protect-sos-panel.png" alt="" /></div>
       </article>
     </section>
 
